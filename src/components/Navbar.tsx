@@ -16,7 +16,7 @@ const Navbar = () => {
 
         <div className="hidden md:flex items-center gap-8 text-sm font-medium">
           <a href="#" className="text-foreground/70 hover:text-primary transition-colors">Find a Place</a>
-          <a href="#" className="text-foreground/70 hover:text-primary transition-colors">Host Dashboard</a>
+          <a href="/host" className="text-foreground/70 hover:text-primary transition-colors">Host Dashboard</a>
           <a href="#" className="text-foreground/70 hover:text-primary transition-colors">Blog</a>
         </div>
 
@@ -37,7 +37,7 @@ const Navbar = () => {
       {mobileOpen && (
         <div className="md:hidden bg-card border-b border-border px-4 pb-4 space-y-3">
           <a href="#" className="block text-sm font-medium text-foreground/70 py-2">Find a Place</a>
-          <a href="#" className="block text-sm font-medium text-foreground/70 py-2">Host Dashboard</a>
+          <a href="/host" className="block text-sm font-medium text-foreground/70 py-2">Host Dashboard</a>
           <a href="#" className="block text-sm font-medium text-foreground/70 py-2">Blog</a>
           <div className="flex gap-3 pt-2">
             <button className="text-sm font-medium text-foreground/70 px-4 py-2">Log In</button>
