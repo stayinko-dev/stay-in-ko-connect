@@ -1,4 +1,4 @@
-import { MapPin } from "lucide-react";
+import logoImg from "@/assets/logo.jpg";
 
 const Footer = () => {
   return (
@@ -6,11 +6,8 @@ const Footer = () => {
       <div className="container mx-auto px-4 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
           <div>
-            <a href="/" className="flex items-center gap-1.5 mb-4">
-              <MapPin className="h-5 w-5 text-primary" />
-              <span className="text-lg font-display font-bold text-foreground">
-                Stay<span className="text-primary">InKo</span>
-              </span>
+            <a href="/" className="flex items-center mb-4">
+              <img src={logoImg} alt="StayInKo" className="h-7" />
             </a>
             <p className="text-sm text-muted-foreground leading-relaxed font-body">
               Your trusted home-finding platform for international students and business travelers in Korea.
