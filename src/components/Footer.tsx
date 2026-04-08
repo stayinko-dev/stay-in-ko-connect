@@ -7,7 +7,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
           <div>
             <a href="/" className="flex items-center mb-4">
-              <img src={logoImg} alt="StayInKo" className="h-7" />
+              <img src={logoImg} alt="StayInKo" className="h-11" />
             </a>
             <p className="text-sm text-muted-foreground leading-relaxed font-body">
               Your trusted home-finding platform for international students and business travelers in Korea.
