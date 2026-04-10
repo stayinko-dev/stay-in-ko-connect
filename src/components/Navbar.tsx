@@ -42,7 +42,7 @@ const Navbar = () => {
           <a href="#" className="block text-sm font-medium text-foreground/70 py-2">Blog</a>
           <div className="flex gap-3 pt-2">
             <button className="text-sm font-medium text-foreground/70 px-4 py-2">Log In</button>
-            <button className="text-sm font-medium bg-primary text-primary-foreground px-5 py-2.5 rounded-lg">Sign Up</button>
+            <a href="/signup" className="text-sm font-medium bg-primary text-primary-foreground px-5 py-2.5 rounded-lg">Sign Up</a>
           </div>
         </div>
       )}
