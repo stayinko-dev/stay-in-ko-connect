@@ -22,9 +22,12 @@ const Navbar = () => {
           <button className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors px-4 py-2">
             Log In
           </button>
-          <button className="text-sm font-medium bg-primary text-primary-foreground px-5 py-2.5 rounded-lg hover:opacity-90 transition-opacity">
-            Sign Up
+          <button className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors px-4 py-2">
+            Log In
           </button>
+          <a href="/signup" className="text-sm font-medium bg-primary text-primary-foreground px-5 py-2.5 rounded-lg hover:opacity-90 transition-opacity">
+            Sign Up
+          </a>
         </div>
 
         <button className="md:hidden" onClick={() => setMobileOpen(!mobileOpen)}>
