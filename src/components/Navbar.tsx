@@ -12,7 +12,7 @@ const Navbar = () => {
           <img src={logoImg} alt="StayInKo" className="h-16" />
         </a>
 
-        <div className="hidden md:flex items-center gap-8 text-sm font-medium">
+        <div className="hidden md:flex items-center gap-8 text-base font-medium">
           <a href="#" className="text-foreground/70 hover:text-primary transition-colors">Find a Place</a>
           <a href="/host" className="text-foreground/70 hover:text-primary transition-colors">Host Dashboard</a>
           <a href="#" className="text-foreground/70 hover:text-primary transition-colors">Blog</a>
