@@ -7,6 +7,7 @@ import Index from "./pages/Index.tsx";
 import HostDashboard from "./pages/HostDashboard.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import SignUp from "./pages/SignUp.tsx";
+import Login from "./pages/Login.tsx";
 
 const queryClient = new QueryClient();
 
