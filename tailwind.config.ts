@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ['"Playfair Display"', 'Georgia', 'serif'],
-        body: ['"DM Sans"', 'system-ui', 'sans-serif'],
+        display: ['"Noto Serif KR"', 'Georgia', 'serif'],
+        body: ['"Noto Sans KR"', 'system-ui', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
