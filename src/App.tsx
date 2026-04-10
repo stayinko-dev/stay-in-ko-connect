@@ -8,6 +8,7 @@ import HostDashboard from "./pages/HostDashboard.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import SignUp from "./pages/SignUp.tsx";
 import Login from "./pages/Login.tsx";
+import ForgotPassword from "./pages/ForgotPassword.tsx";
 
 const queryClient = new QueryClient();
 
