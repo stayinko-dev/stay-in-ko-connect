@@ -7,6 +7,7 @@ import Index from "./pages/Index.tsx";
 import HostDashboard from "./pages/HostDashboard.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import SignUp from "./pages/SignUp.tsx";
+import Login from "./pages/Login.tsx";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +21,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/host" element={<HostDashboard />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/login" element={<Login />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
