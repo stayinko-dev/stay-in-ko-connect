@@ -44,7 +44,6 @@ const ListingDetailModal = ({ listing, open, onOpenChange }: ListingDetailModalP
               </button>
             ))}
           </div>
-          {/* Tags */}
           <div className="absolute top-3 left-3 flex gap-2">
             {listing.tags.map((tag, j) => (
               <Badge
@@ -76,16 +75,14 @@ const ListingDetailModal = ({ listing, open, onOpenChange }: ListingDetailModalP
             </div>
           </DialogHeader>
 
-          {/* Details */}
           <div className="flex items-center gap-6 text-sm text-muted-foreground">
-            <span className="flex items-center gap-1"><Users className="h-4 w-4" />{listing.guests}명</span>
-            <span className="flex items-center gap-1"><BedDouble className="h-4 w-4" />{listing.beds} 침대</span>
-            <span className="flex items-center gap-1"><Bath className="h-4 w-4" />{listing.baths} 욕실</span>
+            <span className="flex items-center gap-1"><Users className="h-4 w-4" />{listing.guests} guest(s)</span>
+            <span className="flex items-center gap-1"><BedDouble className="h-4 w-4" />{listing.beds} bed</span>
+            <span className="flex items-center gap-1"><Bath className="h-4 w-4" />{listing.baths} bath</span>
           </div>
 
           <p className="text-sm text-muted-foreground leading-relaxed">{listing.description}</p>
 
-          {/* Amenities */}
           <div className="flex flex-wrap gap-2">
             {listing.amenities.map((a) => (
               <Badge key={a} variant="secondary" className="text-xs">{a}</Badge>
@@ -96,7 +93,7 @@ const ListingDetailModal = ({ listing, open, onOpenChange }: ListingDetailModalP
           <div className="bg-secondary rounded-xl p-4 space-y-3">
             <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
               <CalendarDays className="h-4 w-4 text-primary" />
-              임대 기간 선택
+              Select Rental Period
             </div>
             <div className="flex items-center gap-3">
               {[1, 3, 6, 12].map((m) => (
@@ -109,12 +106,12 @@ const ListingDetailModal = ({ listing, open, onOpenChange }: ListingDetailModalP
                       : "bg-card text-foreground hover:bg-muted"
                   }`}
                 >
-                  {m}개월
+                  {m} mo
                 </button>
               ))}
             </div>
             <div className="flex items-center justify-between pt-2 border-t border-border">
-              <span className="text-sm text-muted-foreground">총 금액 ({months}개월)</span>
+              <span className="text-sm text-muted-foreground">Total ({months} month{months > 1 ? "s" : ""})</span>
               <span className="text-xl font-bold text-foreground">
                 ₩{totalPrice.toLocaleString()}
               </span>
@@ -124,22 +121,20 @@ const ListingDetailModal = ({ listing, open, onOpenChange }: ListingDetailModalP
             )}
           </div>
 
-          {/* Booking button */}
           <Button className="w-full h-12 text-base font-semibold rounded-xl gap-2">
-            {listing.noDeposit ? "🎉 No Deposit 예약하기" : "예약 요청하기"}
+            {listing.noDeposit ? "🎉 Book with No Deposit" : "Request Booking"}
           </Button>
 
-          {/* Security badge */}
           <div className="flex items-center gap-2 justify-center text-xs text-muted-foreground">
             <ShieldCheck className="h-4 w-4 text-primary" />
-            <span>보안 결제 보장 · 안전한 거래를 약속합니다</span>
+            <span>Secure payment guaranteed · Safe transactions</span>
           </div>
 
           {/* Host info & message */}
           <div className="border-t border-border pt-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold text-foreground">호스트: {listing.hostName}</p>
+                <p className="text-sm font-semibold text-foreground">Host: {listing.hostName}</p>
                 <p className="text-xs text-muted-foreground">{listing.hostResponse}</p>
               </div>
               <Button
@@ -149,7 +144,7 @@ const ListingDetailModal = ({ listing, open, onOpenChange }: ListingDetailModalP
                 onClick={() => setShowMessage(!showMessage)}
               >
                 <MessageCircle className="h-4 w-4" />
-                메시지
+                Message
               </Button>
             </div>
             {showMessage && (
@@ -157,10 +152,10 @@ const ListingDetailModal = ({ listing, open, onOpenChange }: ListingDetailModalP
                 <textarea
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  placeholder="호스트에게 메시지를 보내세요..."
+                  placeholder="Send a message to the host..."
                   className="w-full bg-secondary rounded-lg p-3 text-sm text-foreground placeholder:text-muted-foreground outline-none resize-none h-20 font-body"
                 />
-                <Button size="sm" className="w-full">메시지 보내기</Button>
+                <Button size="sm" className="w-full">Send Message</Button>
               </div>
             )}
           </div>
