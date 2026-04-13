@@ -64,7 +64,10 @@ export default {
         "hero-bg": "hsl(var(--hero-bg))",
         "stats-bg": "hsl(var(--stats-bg))",
         "stats-foreground": "hsl(var(--stats-foreground))",
-        "badge-green": "hsl(var(--badge-green))",
+        "badge-green": {
+          DEFAULT: "hsl(var(--badge-green))",
+          foreground: "hsl(var(--badge-green-foreground))",
+        },
         star: "hsl(var(--star))",
       },
       borderRadius: {
