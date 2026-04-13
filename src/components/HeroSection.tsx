@@ -2,9 +2,9 @@ import { Search, MapPin, Home, Users, ShieldCheck, Sparkles } from "lucide-react
 import heroBg from "@/assets/hero-bg.jpg";
 
 const quickFilters = [
-  { label: "독립공간", icon: Home },
-  { label: "코리빙", icon: Users },
-  { label: "여성전용", icon: ShieldCheck },
+  { label: "Private", icon: Home },
+  { label: "Co-living", icon: Users },
+  { label: "Women Only", icon: ShieldCheck },
   { label: "No Deposit", icon: Sparkles },
 ];
 
@@ -39,17 +39,17 @@ const HeroSection = () => {
           <div className="flex items-center gap-8 mb-10">
             <div>
               <span className="text-3xl font-display font-bold text-foreground">5,000+</span>
-              <p className="text-sm text-muted-foreground">세입자</p>
+              <p className="text-sm text-muted-foreground">Tenants</p>
             </div>
             <div className="w-px h-10 bg-border" />
             <div>
               <span className="text-3xl font-display font-bold text-foreground">1,200+</span>
-              <p className="text-sm text-muted-foreground">매물</p>
+              <p className="text-sm text-muted-foreground">Listings</p>
             </div>
             <div className="w-px h-10 bg-border" />
             <div>
               <span className="text-3xl font-display font-bold text-foreground">98%</span>
-              <p className="text-sm text-muted-foreground">만족도</p>
+              <p className="text-sm text-muted-foreground">Satisfaction</p>
             </div>
           </div>
         </div>
