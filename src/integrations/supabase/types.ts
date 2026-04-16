@@ -14,7 +14,315 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      bookings: {
+        Row: {
+          check_in: string
+          check_out: string
+          created_at: string
+          guest_id: string
+          host_id: string
+          id: string
+          listing_id: string
+          message: string | null
+          metadata: Json | null
+          status: string | null
+          total_amount: number | null
+          updated_at: string
+        }
+        Insert: {
+          check_in: string
+          check_out: string
+          created_at?: string
+          guest_id: string
+          host_id: string
+          id?: string
+          listing_id: string
+          message?: string | null
+          metadata?: Json | null
+          status?: string | null
+          total_amount?: number | null
+          updated_at?: string
+        }
+        Update: {
+          check_in?: string
+          check_out?: string
+          created_at?: string
+          guest_id?: string
+          host_id?: string
+          id?: string
+          listing_id?: string
+          message?: string | null
+          metadata?: Json | null
+          status?: string | null
+          total_amount?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      listings: {
+        Row: {
+          address: string | null
+          amenities: string[] | null
+          area_sqm: number | null
+          baths: number | null
+          beds: number | null
+          bookings_count: number | null
+          city: string | null
+          created_at: string
+          deposit: number | null
+          description: string | null
+          district: string | null
+          guests: number | null
+          host_id: string
+          id: string
+          images: string[] | null
+          metadata: Json | null
+          no_deposit: boolean | null
+          period: string | null
+          price: number
+          rating: number | null
+          status: string | null
+          tag_colors: boolean[] | null
+          tags: string[] | null
+          title: string
+          type: string
+          university_area: string | null
+          updated_at: string
+          views_count: number | null
+        }
+        Insert: {
+          address?: string | null
+          amenities?: string[] | null
+          area_sqm?: number | null
+          baths?: number | null
+          beds?: number | null
+          bookings_count?: number | null
+          city?: string | null
+          created_at?: string
+          deposit?: number | null
+          description?: string | null
+          district?: string | null
+          guests?: number | null
+          host_id: string
+          id?: string
+          images?: string[] | null
+          metadata?: Json | null
+          no_deposit?: boolean | null
+          period?: string | null
+          price?: number
+          rating?: number | null
+          status?: string | null
+          tag_colors?: boolean[] | null
+          tags?: string[] | null
+          title: string
+          type: string
+          university_area?: string | null
+          updated_at?: string
+          views_count?: number | null
+        }
+        Update: {
+          address?: string | null
+          amenities?: string[] | null
+          area_sqm?: number | null
+          baths?: number | null
+          beds?: number | null
+          bookings_count?: number | null
+          city?: string | null
+          created_at?: string
+          deposit?: number | null
+          description?: string | null
+          district?: string | null
+          guests?: number | null
+          host_id?: string
+          id?: string
+          images?: string[] | null
+          metadata?: Json | null
+          no_deposit?: boolean | null
+          period?: string | null
+          price?: number
+          rating?: number | null
+          status?: string | null
+          tag_colors?: boolean[] | null
+          tags?: string[] | null
+          title?: string
+          type?: string
+          university_area?: string | null
+          updated_at?: string
+          views_count?: number | null
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          booking_id: string | null
+          content: string
+          created_at: string
+          id: string
+          is_read: boolean | null
+          metadata: Json | null
+          receiver_id: string
+          sender_id: string
+        }
+        Insert: {
+          booking_id?: string | null
+          content: string
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          metadata?: Json | null
+          receiver_id: string
+          sender_id: string
+        }
+        Update: {
+          booking_id?: string | null
+          content?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          metadata?: Json | null
+          receiver_id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          metadata: Json | null
+          phone: string | null
+          role: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          metadata?: Json | null
+          phone?: string | null
+          role?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          metadata?: Json | null
+          phone?: string | null
+          role?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          host_id: string
+          id: string
+          listing_id: string
+          metadata: Json | null
+          rating: number
+          reviewer_id: string
+          updated_at: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          host_id: string
+          id?: string
+          listing_id: string
+          metadata?: Json | null
+          rating: number
+          reviewer_id: string
+          updated_at?: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          host_id?: string
+          id?: string
+          listing_id?: string
+          metadata?: Json | null
+          rating?: number
+          reviewer_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      settlements: {
+        Row: {
+          account_holder: string | null
+          account_number: string | null
+          bank_name: string | null
+          business_number: string | null
+          created_at: string
+          host_id: string
+          id: string
+          metadata: Json | null
+          settlement_day: number | null
+          updated_at: string
+        }
+        Insert: {
+          account_holder?: string | null
+          account_number?: string | null
+          bank_name?: string | null
+          business_number?: string | null
+          created_at?: string
+          host_id: string
+          id?: string
+          metadata?: Json | null
+          settlement_day?: number | null
+          updated_at?: string
+        }
+        Update: {
+          account_holder?: string | null
+          account_number?: string | null
+          bank_name?: string | null
+          business_number?: string | null
+          created_at?: string
+          host_id?: string
+          id?: string
+          metadata?: Json | null
+          settlement_day?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
