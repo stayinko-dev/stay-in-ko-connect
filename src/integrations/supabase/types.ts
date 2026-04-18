@@ -67,6 +67,38 @@ export type Database = {
           },
         ]
       }
+      favorites: {
+        Row: {
+          created_at: string
+          id: string
+          listing_id: string
+          metadata: Json | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          listing_id: string
+          metadata?: Json | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          listing_id?: string
+          metadata?: Json | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favorites_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       listings: {
         Row: {
           address: string | null
@@ -78,16 +110,25 @@ export type Database = {
           city: string | null
           created_at: string
           deposit: number | null
+          deposit_display: string | null
           description: string | null
           district: string | null
           guests: number | null
           host_id: string
+          host_name: string | null
+          host_response: string | null
           id: string
           images: string[] | null
+          latitude: number | null
+          location_label: string | null
+          longitude: number | null
           metadata: Json | null
+          nearby_subway: string | null
+          nearby_university: string | null
           no_deposit: boolean | null
           period: string | null
           price: number
+          price_display: string | null
           rating: number | null
           status: string | null
           tag_colors: boolean[] | null
@@ -108,16 +149,25 @@ export type Database = {
           city?: string | null
           created_at?: string
           deposit?: number | null
+          deposit_display?: string | null
           description?: string | null
           district?: string | null
           guests?: number | null
           host_id: string
+          host_name?: string | null
+          host_response?: string | null
           id?: string
           images?: string[] | null
+          latitude?: number | null
+          location_label?: string | null
+          longitude?: number | null
           metadata?: Json | null
+          nearby_subway?: string | null
+          nearby_university?: string | null
           no_deposit?: boolean | null
           period?: string | null
           price?: number
+          price_display?: string | null
           rating?: number | null
           status?: string | null
           tag_colors?: boolean[] | null
@@ -138,16 +188,25 @@ export type Database = {
           city?: string | null
           created_at?: string
           deposit?: number | null
+          deposit_display?: string | null
           description?: string | null
           district?: string | null
           guests?: number | null
           host_id?: string
+          host_name?: string | null
+          host_response?: string | null
           id?: string
           images?: string[] | null
+          latitude?: number | null
+          location_label?: string | null
+          longitude?: number | null
           metadata?: Json | null
+          nearby_subway?: string | null
+          nearby_university?: string | null
           no_deposit?: boolean | null
           period?: string | null
           price?: number
+          price_display?: string | null
           rating?: number | null
           status?: string | null
           tag_colors?: boolean[] | null

@@ -2,11 +2,11 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Star, MapPin, Users, BedDouble, Bath, ShieldCheck, MessageCircle, CalendarDays } from "lucide-react";
-import { Listing } from "@/data/mockListings";
+import { Star, MapPin, Users, BedDouble, Bath, ShieldCheck, MessageCircle, CalendarDays, Train, GraduationCap } from "lucide-react";
+import { ListingRow, resolveImage } from "@/hooks/useListings";
 
 interface ListingDetailModalProps {
-  listing: Listing | null;
+  listing: ListingRow | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -19,20 +19,23 @@ const ListingDetailModal = ({ listing, open, onOpenChange }: ListingDetailModalP
 
   if (!listing) return null;
 
+  const images = listing.images || [];
+  const tags = listing.tags || [];
+  const tagColors = listing.tag_colors || [];
+  const amenities = listing.amenities || [];
   const totalPrice = listing.price * months;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-0">
-        {/* Image gallery */}
         <div className="relative">
           <img
-            src={listing.images[selectedImage]}
+            src={resolveImage(images[selectedImage] || "")}
             alt={listing.title}
             className="w-full aspect-[16/9] object-cover rounded-t-lg"
           />
           <div className="absolute bottom-3 left-3 flex gap-2">
-            {listing.images.map((img, i) => (
+            {images.map((img, i) => (
               <button
                 key={i}
                 onClick={() => setSelectedImage(i)}
@@ -40,16 +43,16 @@ const ListingDetailModal = ({ listing, open, onOpenChange }: ListingDetailModalP
                   i === selectedImage ? "border-primary scale-105" : "border-card/60 opacity-70"
                 }`}
               >
-                <img src={img} alt="" className="w-full h-full object-cover" />
+                <img src={resolveImage(img)} alt="" className="w-full h-full object-cover" />
               </button>
             ))}
           </div>
           <div className="absolute top-3 left-3 flex gap-2">
-            {listing.tags.map((tag, j) => (
+            {tags.map((tag, j) => (
               <Badge
                 key={j}
                 className={
-                  listing.tagColors[j]
+                  tagColors[j]
                     ? "bg-primary text-primary-foreground"
                     : "bg-card/90 text-foreground backdrop-blur-sm"
                 }
@@ -64,14 +67,14 @@ const ListingDetailModal = ({ listing, open, onOpenChange }: ListingDetailModalP
           <DialogHeader>
             <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
               <MapPin className="h-4 w-4" />
-              {listing.location} · {listing.university}
+              {listing.location_label} · {listing.university_area}
             </div>
             <DialogTitle className="text-xl font-display font-bold text-foreground">
               {listing.title}
             </DialogTitle>
             <div className="flex items-center gap-1 mt-1">
               <Star className="h-4 w-4 text-star fill-star" />
-              <span className="font-semibold text-sm">{listing.rating}</span>
+              <span className="font-semibold text-sm">{Number(listing.rating).toFixed(1)}</span>
             </div>
           </DialogHeader>
 
@@ -83,13 +86,29 @@ const ListingDetailModal = ({ listing, open, onOpenChange }: ListingDetailModalP
 
           <p className="text-sm text-muted-foreground leading-relaxed">{listing.description}</p>
 
+          {(listing.nearby_subway || listing.nearby_university) && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {listing.nearby_subway && (
+                <div className="flex items-center gap-2 bg-secondary rounded-lg p-3">
+                  <Train className="h-4 w-4 text-primary" />
+                  <span className="text-xs text-foreground">{listing.nearby_subway}</span>
+                </div>
+              )}
+              {listing.nearby_university && (
+                <div className="flex items-center gap-2 bg-secondary rounded-lg p-3">
+                  <GraduationCap className="h-4 w-4 text-primary" />
+                  <span className="text-xs text-foreground">{listing.nearby_university}</span>
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="flex flex-wrap gap-2">
-            {listing.amenities.map((a) => (
+            {amenities.map((a) => (
               <Badge key={a} variant="secondary" className="text-xs">{a}</Badge>
             ))}
           </div>
 
-          {/* Rental period selector */}
           <div className="bg-secondary rounded-xl p-4 space-y-3">
             <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
               <CalendarDays className="h-4 w-4 text-primary" />
@@ -116,13 +135,13 @@ const ListingDetailModal = ({ listing, open, onOpenChange }: ListingDetailModalP
                 ₩{totalPrice.toLocaleString()}
               </span>
             </div>
-            {listing.deposit && !listing.noDeposit && (
-              <p className="text-xs text-muted-foreground">{listing.deposit}</p>
+            {listing.deposit_display && !listing.no_deposit && (
+              <p className="text-xs text-muted-foreground">{listing.deposit_display}</p>
             )}
           </div>
 
           <Button className="w-full h-12 text-base font-semibold rounded-xl gap-2">
-            {listing.noDeposit ? "🎉 Book with No Deposit" : "Request Booking"}
+            {listing.no_deposit ? "🎉 Book with No Deposit" : "Request Booking"}
           </Button>
 
           <div className="flex items-center gap-2 justify-center text-xs text-muted-foreground">
@@ -130,12 +149,11 @@ const ListingDetailModal = ({ listing, open, onOpenChange }: ListingDetailModalP
             <span>Secure payment guaranteed · Safe transactions</span>
           </div>
 
-          {/* Host info & message */}
           <div className="border-t border-border pt-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold text-foreground">Host: {listing.hostName}</p>
-                <p className="text-xs text-muted-foreground">{listing.hostResponse}</p>
+                <p className="text-sm font-semibold text-foreground">Host: {listing.host_name}</p>
+                <p className="text-xs text-muted-foreground">{listing.host_response}</p>
               </div>
               <Button
                 variant="outline"
