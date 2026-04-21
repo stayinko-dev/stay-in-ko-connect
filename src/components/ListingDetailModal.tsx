@@ -1,8 +1,19 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Bath,
+  BedDouble,
+  CalendarDays,
+  GraduationCap,
+  MapPin,
+  MessageCircle,
+  ShieldCheck,
+  Star,
+  Train,
+  Users,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Star, MapPin, Users, BedDouble, Bath, ShieldCheck, MessageCircle, CalendarDays, Train, GraduationCap } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ListingRow, resolveImage } from "@/hooks/useListings";
 
 interface ListingDetailModalProps {
@@ -17,7 +28,9 @@ const ListingDetailModal = ({ listing, open, onOpenChange }: ListingDetailModalP
   const [showMessage, setShowMessage] = useState(false);
   const [message, setMessage] = useState("");
 
-  if (!listing) return null;
+  if (!listing) {
+    return null;
+  }
 
   const images = listing.images || [];
   const tags = listing.tags || [];
@@ -27,126 +40,123 @@ const ListingDetailModal = ({ listing, open, onOpenChange }: ListingDetailModalP
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-0">
+      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto p-0">
         <div className="relative">
           <img
             src={resolveImage(images[selectedImage] || "")}
             alt={listing.title}
-            className="w-full aspect-[16/9] object-cover rounded-t-lg"
+            className="aspect-[16/9] w-full rounded-t-lg object-cover"
           />
-          <div className="absolute bottom-3 left-3 flex gap-2">
-            {images.map((img, i) => (
-              <button
-                key={i}
-                onClick={() => setSelectedImage(i)}
-                className={`w-14 h-10 rounded-md overflow-hidden border-2 transition-all ${
-                  i === selectedImage ? "border-primary scale-105" : "border-card/60 opacity-70"
-                }`}
-              >
-                <img src={resolveImage(img)} alt="" className="w-full h-full object-cover" />
-              </button>
-            ))}
-          </div>
           <div className="absolute top-3 left-3 flex gap-2">
-            {tags.map((tag, j) => (
+            {tags.map((tag, index) => (
               <Badge
-                key={j}
+                key={`${listing.id}-${tag}-${index}`}
                 className={
-                  tagColors[j]
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-card/90 text-foreground backdrop-blur-sm"
+                  tagColors[index] ? "bg-primary text-primary-foreground" : "bg-card/90 text-foreground backdrop-blur-sm"
                 }
               >
                 {tag}
               </Badge>
             ))}
           </div>
+          <div className="absolute bottom-3 left-3 flex gap-2">
+            {images.map((image, index) => (
+              <button
+                key={`${listing.id}-image-${index}`}
+                type="button"
+                onClick={() => setSelectedImage(index)}
+                className={`h-10 w-14 overflow-hidden rounded-md border-2 transition-all ${
+                  index === selectedImage ? "scale-105 border-primary" : "border-card/60 opacity-70"
+                }`}
+              >
+                <img src={resolveImage(image)} alt="" className="h-full w-full object-cover" />
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className="p-6 space-y-5">
+        <div className="space-y-5 p-6">
           <DialogHeader>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+            <div className="mb-1 flex items-center gap-2 text-sm text-muted-foreground">
               <MapPin className="h-4 w-4" />
-              {listing.location_label} · {listing.university_area}
+              {listing.location_label}
+              {listing.university_area ? <span>· {listing.university_area}</span> : null}
             </div>
-            <DialogTitle className="text-xl font-display font-bold text-foreground">
-              {listing.title}
-            </DialogTitle>
-            <div className="flex items-center gap-1 mt-1">
-              <Star className="h-4 w-4 text-star fill-star" />
-              <span className="font-semibold text-sm">{Number(listing.rating).toFixed(1)}</span>
+            <DialogTitle className="text-xl font-bold text-foreground">{listing.title}</DialogTitle>
+            <div className="mt-1 flex items-center gap-1">
+              <Star className="h-4 w-4 fill-star text-star" />
+              <span className="text-sm font-semibold">{Number(listing.rating).toFixed(1)}</span>
             </div>
           </DialogHeader>
 
           <div className="flex items-center gap-6 text-sm text-muted-foreground">
-            <span className="flex items-center gap-1"><Users className="h-4 w-4" />{listing.guests} guest(s)</span>
+            <span className="flex items-center gap-1"><Users className="h-4 w-4" />{listing.guests} guests</span>
             <span className="flex items-center gap-1"><BedDouble className="h-4 w-4" />{listing.beds} bed</span>
             <span className="flex items-center gap-1"><Bath className="h-4 w-4" />{listing.baths} bath</span>
           </div>
 
-          <p className="text-sm text-muted-foreground leading-relaxed">{listing.description}</p>
+          <p className="text-sm leading-relaxed text-muted-foreground">{listing.description}</p>
 
-          {(listing.nearby_subway || listing.nearby_university) && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {listing.nearby_subway && (
-                <div className="flex items-center gap-2 bg-secondary rounded-lg p-3">
+          {listing.nearby_subway || listing.nearby_university ? (
+            <div className="grid gap-3 sm:grid-cols-2">
+              {listing.nearby_subway ? (
+                <div className="flex items-center gap-2 rounded-lg bg-secondary p-3">
                   <Train className="h-4 w-4 text-primary" />
                   <span className="text-xs text-foreground">{listing.nearby_subway}</span>
                 </div>
-              )}
-              {listing.nearby_university && (
-                <div className="flex items-center gap-2 bg-secondary rounded-lg p-3">
+              ) : null}
+              {listing.nearby_university ? (
+                <div className="flex items-center gap-2 rounded-lg bg-secondary p-3">
                   <GraduationCap className="h-4 w-4 text-primary" />
                   <span className="text-xs text-foreground">{listing.nearby_university}</span>
                 </div>
-              )}
+              ) : null}
             </div>
-          )}
+          ) : null}
 
           <div className="flex flex-wrap gap-2">
-            {amenities.map((a) => (
-              <Badge key={a} variant="secondary" className="text-xs">{a}</Badge>
+            {amenities.map((amenity) => (
+              <Badge key={amenity} variant="secondary" className="text-xs">
+                {amenity}
+              </Badge>
             ))}
           </div>
 
-          <div className="bg-secondary rounded-xl p-4 space-y-3">
+          <div className="space-y-3 rounded-xl bg-secondary p-4">
             <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
               <CalendarDays className="h-4 w-4 text-primary" />
-              Select Rental Period
+              Select rental period
             </div>
             <div className="flex items-center gap-3">
-              {[1, 3, 6, 12].map((m) => (
+              {[1, 3, 6, 12].map((value) => (
                 <button
-                  key={m}
-                  onClick={() => setMonths(m)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    months === m
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-card text-foreground hover:bg-muted"
+                  key={value}
+                  type="button"
+                  onClick={() => setMonths(value)}
+                  className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                    months === value ? "bg-primary text-primary-foreground" : "bg-card text-foreground hover:bg-muted"
                   }`}
                 >
-                  {m} mo
+                  {value} mo
                 </button>
               ))}
             </div>
-            <div className="flex items-center justify-between pt-2 border-t border-border">
+            <div className="flex items-center justify-between border-t border-border pt-2">
               <span className="text-sm text-muted-foreground">Total ({months} month{months > 1 ? "s" : ""})</span>
-              <span className="text-xl font-bold text-foreground">
-                ₩{totalPrice.toLocaleString()}
-              </span>
+              <span className="text-xl font-bold text-foreground">{totalPrice.toLocaleString("ko-KR")}원</span>
             </div>
-            {listing.deposit_display && !listing.no_deposit && (
+            {listing.deposit_display && !listing.no_deposit ? (
               <p className="text-xs text-muted-foreground">{listing.deposit_display}</p>
-            )}
+            ) : null}
           </div>
 
-          <Button className="w-full h-12 text-base font-semibold rounded-xl gap-2">
-            {listing.no_deposit ? "🎉 Book with No Deposit" : "Request Booking"}
+          <Button className="h-12 w-full rounded-xl text-base font-semibold">
+            {listing.no_deposit ? "Book with no deposit" : "Request booking"}
           </Button>
 
-          <div className="flex items-center gap-2 justify-center text-xs text-muted-foreground">
+          <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
             <ShieldCheck className="h-4 w-4 text-primary" />
-            <span>Secure payment guaranteed · Safe transactions</span>
+            <span>Secure payment workflow and verified host communication</span>
           </div>
 
           <div className="border-t border-border pt-4">
@@ -155,27 +165,23 @@ const ListingDetailModal = ({ listing, open, onOpenChange }: ListingDetailModalP
                 <p className="text-sm font-semibold text-foreground">Host: {listing.host_name}</p>
                 <p className="text-xs text-muted-foreground">{listing.host_response}</p>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-1"
-                onClick={() => setShowMessage(!showMessage)}
-              >
+              <Button variant="outline" size="sm" className="gap-1" onClick={() => setShowMessage((value) => !value)}>
                 <MessageCircle className="h-4 w-4" />
                 Message
               </Button>
             </div>
-            {showMessage && (
+
+            {showMessage ? (
               <div className="mt-3 space-y-2">
                 <textarea
                   value={message}
-                  onChange={(e) => setMessage(e.target.value)}
+                  onChange={(event) => setMessage(event.target.value)}
                   placeholder="Send a message to the host..."
-                  className="w-full bg-secondary rounded-lg p-3 text-sm text-foreground placeholder:text-muted-foreground outline-none resize-none h-20 font-body"
+                  className="h-20 w-full resize-none rounded-lg bg-secondary p-3 text-sm text-foreground outline-none placeholder:text-muted-foreground"
                 />
                 <Button size="sm" className="w-full">Send Message</Button>
               </div>
-            )}
+            ) : null}
           </div>
         </div>
       </DialogContent>

@@ -1,80 +1,91 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Mail } from "lucide-react";
+import { ArrowLeft, Loader2, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import logoImg from "@/assets/logo.jpg";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // TODO: integrate with Lovable Cloud auth
-    console.log("Password reset requested for", email);
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setSubmitting(true);
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/login`,
+    });
+
+    setSubmitting(false);
+
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+
     setSubmitted(true);
+    toast.success("Reset email sent.");
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-surface px-4 py-10">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <Link to="/">
-            <img src={logoImg} alt="StayInKo" className="h-14 mx-auto mb-6" />
+            <img src={logoImg} alt="StayInKo" className="mx-auto mb-6 h-14" />
           </Link>
-          <h1 className="text-3xl font-bold font-display text-foreground">비밀번호 찾기</h1>
+          <h1 className="text-3xl font-bold text-foreground">Reset your password</h1>
           <p className="mt-2 text-muted-foreground">
-            가입하신 이메일을 입력하시면 비밀번호 재설정 링크를 보내드립니다
+            Enter your account email and we will send you a reset link.
           </p>
         </div>
 
-        <div className="bg-card rounded-2xl shadow-lg border border-border p-8 space-y-5">
+        <div className="space-y-5 rounded-2xl border border-border bg-card p-8 shadow-floating">
           {!submitted ? (
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-2">
-                <Label htmlFor="email">이메일</Label>
+                <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="example@email.com"
+                  placeholder="support@stayinko.com"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(event) => setEmail(event.target.value)}
                   required
                 />
               </div>
 
-              <Button type="submit" className="w-full text-base py-5 rounded-xl">
-                재설정 링크 보내기
+              <Button type="submit" className="w-full" size="lg" disabled={submitting}>
+                {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                Send reset link
               </Button>
             </form>
           ) : (
-            <div className="text-center space-y-4 py-4">
-              <div className="mx-auto w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center">
+            <div className="space-y-4 py-4 text-center">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
                 <Mail className="h-7 w-7 text-primary" />
               </div>
-              <h2 className="text-lg font-semibold text-foreground">이메일을 확인해주세요</h2>
+              <h2 className="text-lg font-semibold text-foreground">Check your inbox</h2>
               <p className="text-sm text-muted-foreground">
-                <span className="font-medium text-foreground">{email}</span>으로 비밀번호 재설정 링크를 보냈습니다.
-                메일함을 확인해주세요.
+                We sent a reset link to <span className="font-medium text-foreground">{email}</span>.
               </p>
-              <Button
-                variant="outline"
-                className="mt-2"
-                onClick={() => setSubmitted(false)}
-              >
-                다른 이메일로 다시 시도
+              <Button variant="outline" onClick={() => setSubmitted(false)}>
+                Try another email
               </Button>
             </div>
           )}
 
           <Link
             to="/login"
-            className="flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            className="flex items-center justify-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
             <ArrowLeft className="h-4 w-4" />
-            로그인으로 돌아가기
+            Back to login
           </Link>
         </div>
       </div>

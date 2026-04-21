@@ -7,6 +7,7 @@ import StatsSection from "@/components/StatsSection";
 import HowItWorks from "@/components/HowItWorks";
 import Testimonials from "@/components/Testimonials";
 import Footer from "@/components/Footer";
+import BusinessMomentum from "@/components/BusinessMomentum";
 
 const Index = () => {
   return (
@@ -18,6 +19,7 @@ const Index = () => {
       <PopularCities />
       <StatsSection />
       <HowItWorks />
+      <BusinessMomentum />
       <Testimonials />
       <Footer />
     </div>

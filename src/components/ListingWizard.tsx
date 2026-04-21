@@ -1,221 +1,305 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { CheckCircle, ChevronLeft, ChevronRight, FileCheck, Home, MapPin, Tag } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { CheckCircle, ChevronLeft, ChevronRight, Home, MapPin, Tag, FileCheck } from "lucide-react";
 
-const STEPS = [
-  { label: "숙소 타입", icon: Home },
-  { label: "위치 & 가격", icon: MapPin },
-  { label: "편의시설 & 설명", icon: Tag },
-  { label: "최종 확인", icon: FileCheck },
+const steps = [
+  { label: "Property type", icon: Home },
+  { label: "Location and price", icon: MapPin },
+  { label: "Highlights", icon: Tag },
+  { label: "Final review", icon: FileCheck },
 ];
 
 const propertyTypes = [
-  { value: "studio", label: "스튜디오", desc: "1인 독립 공간" },
-  { value: "apartment", label: "아파트", desc: "넓은 거주 공간" },
-  { value: "share", label: "쉐어하우스", desc: "공유 주거 공간" },
-  { value: "coliving", label: "코리빙", desc: "커뮤니티 기반 주거" },
+  { value: "studio", label: "Studio", desc: "Great for exchange students and solo stays" },
+  { value: "apartment", label: "Apartment", desc: "Best for families and long stays" },
+  { value: "share", label: "Share house", desc: "Affordable and community-friendly" },
+  { value: "coliving", label: "Co-living", desc: "Service-led housing for flexible residents" },
+  { value: "private", label: "Private room", desc: "Private space inside a shared home" },
+  { value: "women_only", label: "Women only", desc: "Safety-first inventory segment" },
 ];
 
 const amenityOptions = [
-  "WiFi", "에어컨", "세탁기", "냉장고", "전자레인지", "TV",
-  "주방", "공용주방", "라운지", "스터디룸", "피트니스", "CCTV",
-  "옥상 테라스", "주차장", "엘리베이터", "반려동물 가능",
+  "Wi-Fi",
+  "Air conditioning",
+  "Washer",
+  "Dryer",
+  "Microwave",
+  "Desk",
+  "Wardrobe",
+  "Secure access",
+  "Elevator",
+  "Parking",
+  "Gym",
+  "Shared lounge",
 ];
+
+export type ListingWizardValues = {
+  type: string;
+  city: string;
+  address: string;
+  locationLabel: string;
+  universityArea: string;
+  nearbySubway: string;
+  nearbyUniversity: string;
+  title: string;
+  description: string;
+  price: string;
+  deposit: string;
+  beds: string;
+  baths: string;
+  guests: string;
+  area: string;
+  noDeposit: boolean;
+  amenities: string[];
+  hostResponse: string;
+};
+
+const initialValues: ListingWizardValues = {
+  type: "studio",
+  city: "Seoul",
+  address: "",
+  locationLabel: "",
+  universityArea: "",
+  nearbySubway: "",
+  nearbyUniversity: "",
+  title: "",
+  description: "",
+  price: "",
+  deposit: "",
+  beds: "1",
+  baths: "1",
+  guests: "1",
+  area: "",
+  noDeposit: false,
+  amenities: [],
+  hostResponse: "Usually replies within 1 hour",
+};
 
 interface ListingWizardProps {
   onClose: () => void;
-  onSubmit: () => void;
+  onSubmit: (values: ListingWizardValues) => Promise<void> | void;
+  submitting?: boolean;
 }
 
-const ListingWizard = ({ onClose, onSubmit }: ListingWizardProps) => {
+const ListingWizard = ({ onClose, onSubmit, submitting = false }: ListingWizardProps) => {
   const [step, setStep] = useState(0);
-  const [form, setForm] = useState({
-    type: "",
-    address: "",
-    city: "",
-    price: "",
-    area: "",
-    rooms: "1",
-    baths: "1",
-    amenities: [] as string[],
-    title: "",
-    description: "",
-  });
+  const [form, setForm] = useState<ListingWizardValues>(initialValues);
 
-  const updateForm = (key: string, value: string | string[]) =>
-    setForm((prev) => ({ ...prev, [key]: value }));
+  const summary = useMemo(() => {
+    const monthlyRent = form.price ? `KRW ${Number(form.price).toLocaleString("ko-KR")} / month` : "-";
+    const deposit = form.noDeposit ? "No deposit" : form.deposit ? `KRW ${Number(form.deposit).toLocaleString("ko-KR")}` : "-";
 
-  const toggleAmenity = (a: string) => {
-    setForm((prev) => ({
-      ...prev,
-      amenities: prev.amenities.includes(a)
-        ? prev.amenities.filter((x) => x !== a)
-        : [...prev.amenities, a],
-    }));
-  };
+    return { monthlyRent, deposit };
+  }, [form.deposit, form.noDeposit, form.price]);
 
   const canNext = () => {
-    if (step === 0) return !!form.type;
-    if (step === 1) return !!form.address && !!form.city && !!form.price;
-    if (step === 2) return !!form.title && !!form.description;
+    if (step === 0) return Boolean(form.type);
+    if (step === 1) return Boolean(form.city && form.address && form.locationLabel && form.price);
+    if (step === 2) return Boolean(form.title && form.description);
     return true;
+  };
+
+  const update = <K extends keyof ListingWizardValues>(key: K, value: ListingWizardValues[K]) => {
+    setForm((current) => ({ ...current, [key]: value }));
+  };
+
+  const toggleAmenity = (amenity: string) => {
+    setForm((current) => ({
+      ...current,
+      amenities: current.amenities.includes(amenity)
+        ? current.amenities.filter((item) => item !== amenity)
+        : [...current.amenities, amenity],
+    }));
   };
 
   return (
     <div className="space-y-6">
-      {/* Progress */}
-      <div className="flex items-center gap-2 mb-2">
-        {STEPS.map((s, i) => (
-          <div key={i} className="flex items-center gap-2 flex-1">
+      <div className="flex items-center gap-2">
+        {steps.map((currentStep, index) => (
+          <div key={currentStep.label} className="flex flex-1 items-center gap-2">
             <div
-              className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 transition-colors ${
-                i < step
-                  ? "bg-primary text-primary-foreground"
-                  : i === step
-                  ? "bg-primary text-primary-foreground ring-2 ring-primary/30"
-                  : "bg-secondary text-muted-foreground"
+              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                index <= step ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"
               }`}
             >
-              {i < step ? <CheckCircle className="h-4 w-4" /> : i + 1}
+              {index < step ? <CheckCircle className="h-4 w-4" /> : index + 1}
             </div>
-            <span className="text-xs text-muted-foreground hidden sm:block">{s.label}</span>
-            {i < STEPS.length - 1 && <div className="flex-1 h-px bg-border" />}
+            <span className="hidden text-xs text-muted-foreground sm:block">{currentStep.label}</span>
+            {index < steps.length - 1 ? <div className="h-px flex-1 bg-border" /> : null}
           </div>
         ))}
       </div>
 
-      {/* Step 1: Type */}
-      {step === 0 && (
-        <div className="grid grid-cols-2 gap-4">
-          {propertyTypes.map((t) => (
+      {step === 0 ? (
+        <div className="grid gap-4 sm:grid-cols-2">
+          {propertyTypes.map((type) => (
             <button
-              key={t.value}
-              onClick={() => updateForm("type", t.value)}
-              className={`p-5 rounded-xl border-2 text-left transition-all ${
-                form.type === t.value
-                  ? "border-primary bg-primary/5"
-                  : "border-border hover:border-muted-foreground/30"
+              key={type.value}
+              type="button"
+              onClick={() => update("type", type.value)}
+              className={`rounded-2xl border-2 p-5 text-left transition-colors ${
+                form.type === type.value ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"
               }`}
             >
-              <p className="font-semibold text-foreground">{t.label}</p>
-              <p className="text-xs text-muted-foreground mt-1">{t.desc}</p>
+              <p className="font-semibold text-foreground">{type.label}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{type.desc}</p>
             </button>
           ))}
         </div>
-      )}
+      ) : null}
 
-      {/* Step 2: Location & Price */}
-      {step === 1 && (
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">도시</label>
-              <Input value={form.city} onChange={(e) => updateForm("city", e.target.value)} placeholder="예: 서울" />
-            </div>
-            <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">상세 주소</label>
-              <Input value={form.address} onChange={(e) => updateForm("address", e.target.value)} placeholder="예: 마포구 홍대입구" />
-            </div>
-          </div>
-          <div className="grid grid-cols-3 gap-4">
-            <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">월세 (원)</label>
-              <Input type="number" value={form.price} onChange={(e) => updateForm("price", e.target.value)} placeholder="850000" />
-            </div>
-            <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">면적 (㎡)</label>
-              <Input type="number" value={form.area} onChange={(e) => updateForm("area", e.target.value)} placeholder="33" />
-            </div>
-            <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">방 수</label>
-              <Input type="number" value={form.rooms} onChange={(e) => updateForm("rooms", e.target.value)} />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Step 3: Amenities & Description */}
-      {step === 2 && (
-        <div className="space-y-4">
-          <div>
-            <label className="text-sm font-medium text-foreground mb-1 block">숙소 제목</label>
-            <Input value={form.title} onChange={(e) => updateForm("title", e.target.value)} placeholder="매력적인 숙소 제목을 입력하세요" />
-          </div>
-          <div>
-            <label className="text-sm font-medium text-foreground mb-1 block">숙소 설명</label>
-            <textarea
-              value={form.description}
-              onChange={(e) => updateForm("description", e.target.value)}
-              placeholder="숙소의 특징과 장점을 자세히 설명해주세요..."
-              className="w-full bg-background border border-input rounded-md p-3 text-sm text-foreground placeholder:text-muted-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none h-24 font-body"
+      {step === 1 ? (
+        <div className="grid gap-4">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <LabeledInput label="City" value={form.city} onChange={(value) => update("city", value)} placeholder="Seoul" />
+            <LabeledInput
+              label="Public location label"
+              value={form.locationLabel}
+              onChange={(value) => update("locationLabel", value)}
+              placeholder="Seongsu, 10 min to Seoul Forest"
             />
           </div>
-          <div>
-            <label className="text-sm font-medium text-foreground mb-2 block">편의시설 선택</label>
+          <LabeledInput
+            label="Full address"
+            value={form.address}
+            onChange={(value) => update("address", value)}
+            placeholder="123 Yeonmujang-gil, Seongdong-gu"
+          />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <LabeledInput
+              label="University or district"
+              value={form.universityArea}
+              onChange={(value) => update("universityArea", value)}
+              placeholder="Near Korea Univ."
+            />
+            <LabeledInput
+              label="Nearest subway"
+              value={form.nearbySubway}
+              onChange={(value) => update("nearbySubway", value)}
+              placeholder="Seongsu Station, 6 min walk"
+            />
+          </div>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <LabeledInput label="Monthly rent" type="number" value={form.price} onChange={(value) => update("price", value)} placeholder="850000" />
+            <LabeledInput
+              label="Deposit"
+              type="number"
+              value={form.deposit}
+              onChange={(value) => update("deposit", value)}
+              placeholder="1000000"
+              disabled={form.noDeposit}
+            />
+            <LabeledInput label="Area (sqm)" type="number" value={form.area} onChange={(value) => update("area", value)} placeholder="22" />
+          </div>
+          <label className="flex items-center gap-2 text-sm text-foreground">
+            <input
+              type="checkbox"
+              checked={form.noDeposit}
+              onChange={(event) => update("noDeposit", event.target.checked)}
+              className="h-4 w-4 rounded border-border"
+            />
+            Offer this listing with no deposit
+          </label>
+        </div>
+      ) : null}
+
+      {step === 2 ? (
+        <div className="grid gap-4">
+          <LabeledInput
+            label="Listing title"
+            value={form.title}
+            onChange={(value) => update("title", value)}
+            placeholder="No-deposit studio near Korea University"
+          />
+          <div className="grid gap-4 sm:grid-cols-3">
+            <LabeledInput label="Beds" type="number" value={form.beds} onChange={(value) => update("beds", value)} />
+            <LabeledInput label="Baths" type="number" value={form.baths} onChange={(value) => update("baths", value)} />
+            <LabeledInput label="Guests" type="number" value={form.guests} onChange={(value) => update("guests", value)} />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-foreground">Description</label>
+            <textarea
+              value={form.description}
+              onChange={(event) => update("description", event.target.value)}
+              placeholder="Explain check-in, neighborhood strengths, and what is included for international residents."
+              className="min-h-28 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            />
+          </div>
+          <LabeledInput
+            label="Host response promise"
+            value={form.hostResponse}
+            onChange={(value) => update("hostResponse", value)}
+            placeholder="Usually replies within 30 minutes"
+          />
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-foreground">Amenities</label>
             <div className="flex flex-wrap gap-2">
-              {amenityOptions.map((a) => (
+              {amenityOptions.map((amenity) => (
                 <button
-                  key={a}
-                  onClick={() => toggleAmenity(a)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                    form.amenities.includes(a)
+                  key={amenity}
+                  type="button"
+                  onClick={() => toggleAmenity(amenity)}
+                  className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                    form.amenities.includes(amenity)
                       ? "bg-primary text-primary-foreground"
                       : "bg-secondary text-secondary-foreground hover:bg-muted"
                   }`}
                 >
-                  {a}
+                  {amenity}
                 </button>
               ))}
             </div>
           </div>
         </div>
-      )}
+      ) : null}
 
-      {/* Step 4: Confirm */}
-      {step === 3 && (
+      {step === 3 ? (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">등록 정보 확인</CardTitle>
+            <CardTitle className="text-lg">Review before publishing</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3 text-sm">
-            <Row label="숙소 타입" value={propertyTypes.find((t) => t.value === form.type)?.label || ""} />
-            <Row label="위치" value={`${form.city} ${form.address}`} />
-            <Row label="월세" value={form.price ? `₩${Number(form.price).toLocaleString()}` : ""} />
-            <Row label="면적" value={form.area ? `${form.area}㎡` : "-"} />
-            <Row label="방 수" value={`${form.rooms}개`} />
-            <Row label="제목" value={form.title} />
+          <CardContent className="space-y-4 text-sm">
+            <SummaryRow
+              label="Property type"
+              value={propertyTypes.find((type) => type.value === form.type)?.label || "-"}
+            />
+            <SummaryRow label="Location" value={`${form.city} - ${form.locationLabel}`} />
+            <SummaryRow label="Address" value={form.address || "-"} />
+            <SummaryRow label="Price" value={`${summary.monthlyRent} / ${summary.deposit}`} />
+            <SummaryRow label="District" value={form.universityArea || "-"} />
+            <SummaryRow label="Subway" value={form.nearbySubway || "-"} />
+            <SummaryRow label="Title" value={form.title || "-"} />
             <div>
-              <span className="text-muted-foreground">설명:</span>
-              <p className="text-foreground mt-1">{form.description}</p>
+              <p className="text-muted-foreground">Description</p>
+              <p className="mt-1 text-foreground">{form.description || "-"}</p>
             </div>
             <div>
-              <span className="text-muted-foreground">편의시설:</span>
-              <div className="flex flex-wrap gap-1 mt-1">
-                {form.amenities.map((a) => (
-                  <Badge key={a} variant="secondary" className="text-xs">{a}</Badge>
-                ))}
+              <p className="text-muted-foreground">Amenities</p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {form.amenities.length ? form.amenities.map((amenity) => <Badge key={amenity}>{amenity}</Badge>) : <span>-</span>}
               </div>
             </div>
           </CardContent>
         </Card>
-      )}
+      ) : null}
 
-      {/* Navigation */}
       <div className="flex justify-between pt-2">
-        <Button variant="outline" onClick={step === 0 ? onClose : () => setStep(step - 1)}>
-          <ChevronLeft className="h-4 w-4 mr-1" />
-          {step === 0 ? "취소" : "이전"}
+        <Button type="button" variant="outline" onClick={step === 0 ? onClose : () => setStep((value) => value - 1)}>
+          <ChevronLeft className="h-4 w-4" />
+          {step === 0 ? "Cancel" : "Back"}
         </Button>
-        {step < 3 ? (
-          <Button onClick={() => setStep(step + 1)} disabled={!canNext()}>
-            다음 <ChevronRight className="h-4 w-4 ml-1" />
+
+        {step < steps.length - 1 ? (
+          <Button type="button" onClick={() => setStep((value) => value + 1)} disabled={!canNext()}>
+            Next
+            <ChevronRight className="h-4 w-4" />
           </Button>
         ) : (
-          <Button onClick={onSubmit}>
-            🎉 매물 등록하기
+          <Button type="button" onClick={() => onSubmit(form)} disabled={submitting}>
+            {submitting ? "Publishing..." : "Publish listing"}
           </Button>
         )}
       </div>
@@ -223,10 +307,37 @@ const ListingWizard = ({ onClose, onSubmit }: ListingWizardProps) => {
   );
 };
 
-const Row = ({ label, value }: { label: string; value: string }) => (
-  <div className="flex justify-between">
+const LabeledInput = ({
+  disabled = false,
+  label,
+  onChange,
+  placeholder,
+  type = "text",
+  value,
+}: {
+  disabled?: boolean;
+  label: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  type?: string;
+  value: string;
+}) => (
+  <div className="space-y-2">
+    <label className="text-sm font-medium text-foreground">{label}</label>
+    <Input
+      disabled={disabled}
+      type={type}
+      value={value}
+      onChange={(event) => onChange(event.target.value)}
+      placeholder={placeholder}
+    />
+  </div>
+);
+
+const SummaryRow = ({ label, value }: { label: string; value: string }) => (
+  <div className="flex items-start justify-between gap-6">
     <span className="text-muted-foreground">{label}</span>
-    <span className="text-foreground font-medium">{value}</span>
+    <span className="text-right font-medium text-foreground">{value}</span>
   </div>
 );
 
