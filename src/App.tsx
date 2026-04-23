@@ -12,10 +12,6 @@ import SignUp from "./pages/SignUp.tsx";
 import Login from "./pages/Login.tsx";
 import ForgotPassword from "./pages/ForgotPassword.tsx";
 import MyPage from "./pages/MyPage.tsx";
-import RequestNew from "./pages/RequestNew.tsx";
-import MatchBooking from "./pages/MatchBooking.tsx";
-import Community from "./pages/Community.tsx";
-import SafetyTrust from "./pages/SafetyTrust.tsx";
 
 const queryClient = new QueryClient();
 
@@ -28,10 +24,6 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/request/new" element={<RequestNew />} />
-            <Route path="/match" element={<MatchBooking />} />
-            <Route path="/community" element={<Community />} />
-            <Route path="/safety" element={<SafetyTrust />} />
             <Route
               path="/host"
               element={
