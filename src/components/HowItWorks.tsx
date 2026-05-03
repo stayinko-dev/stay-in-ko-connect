@@ -1,50 +1,59 @@
-import { Search, CreditCard, UserCheck, CheckCircle } from "lucide-react";
+import { Search, MessageSquare, KeyRound, ArrowRight } from "lucide-react";
+import SectionHeader from "@/components/ui/section-header";
 
 const steps = [
   {
     icon: Search,
-    step: "Step 1",
-    title: "Explore stays",
-    description: "Check photos and details. If you have questions, feel free to contact the host.",
+    step: "01",
+    title: "Discover your home",
+    description: "Browse verified listings filtered by university, subway line, budget, and amenities — all in English.",
   },
   {
-    icon: CreditCard,
-    step: "Step 2",
-    title: "Payment completed",
-    description: "Payment is made upon request agreement. Your money is protected until move-in.",
+    icon: MessageSquare,
+    step: "02",
+    title: "Chat & book safely",
+    description: "Message the host directly, choose your dates, and book. Your payment is protected in escrow until check-in.",
   },
   {
-    icon: UserCheck,
-    step: "Step 3",
-    title: "Host confirmation",
-    description: "The host will respond within 24 hours to confirm your booking.",
-  },
-  {
-    icon: CheckCircle,
-    step: "Step 4",
-    title: "Agreement confirmed",
-    description: "Your agreement will either be confirmed or fully refunded.",
+    icon: KeyRound,
+    step: "03",
+    title: "Move in stress-free",
+    description: "Get keys, settle in, and enjoy. Our team is one tap away if anything needs attention.",
   },
 ];
 
 const HowItWorks = () => {
   return (
-    <section className="py-16 md:py-24 bg-background">
+    <section className="py-20 md:py-28 bg-background">
       <div className="container mx-auto px-4 lg:px-8">
-        <div className="text-center mb-14">
-          <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground">How StayInKo Works</h2>
-          <p className="text-muted-foreground mt-3 font-body">Simple, safe, and designed for you.</p>
-        </div>
+        <SectionHeader
+          align="center"
+          eyebrow="How it works"
+          title="From search to keys in 3 steps."
+          description="Designed to remove every awkward moment of renting abroad."
+        />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="relative grid gap-8 md:grid-cols-3">
+          {/* Connector line */}
+          <div className="pointer-events-none absolute left-0 right-0 top-16 hidden md:block">
+            <div className="mx-auto h-px w-3/4 bg-gradient-to-r from-transparent via-border to-transparent" />
+          </div>
+
           {steps.map((s, i) => (
-            <div key={i} className="text-center group">
-              <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                <s.icon className="h-7 w-7 text-primary" />
+            <div key={s.step} className="relative">
+              <div className="relative flex flex-col items-start rounded-3xl border border-border/70 bg-card p-7 shadow-soft transition-base hover:-translate-y-1 hover:shadow-floating">
+                <div className="flex w-full items-center justify-between mb-5">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-primary text-primary-foreground shadow-glow">
+                    <s.icon className="h-6 w-6" />
+                  </div>
+                  <span className="text-5xl font-display font-bold text-primary/15">{s.step}</span>
+                </div>
+                <h3 className="text-xl font-semibold text-foreground mb-2">{s.title}</h3>
+                <p className="text-sm leading-6 text-muted-foreground">{s.description}</p>
               </div>
-              <span className="text-xs font-semibold text-primary uppercase tracking-wider">{s.step}</span>
-              <h3 className="text-lg font-semibold text-foreground mt-2 mb-2 font-body">{s.title}</h3>
-              <p className="text-sm text-muted-foreground font-body leading-relaxed">{s.description}</p>
+              {i < steps.length - 1 && (
+                <ArrowRight className="absolute -right-4 top-1/2 hidden h-6 w-6 -translate-y-1/2 text-primary/40 md:block" />
+              )}
             </div>
           ))}
         </div>

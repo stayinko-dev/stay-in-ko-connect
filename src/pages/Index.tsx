@@ -8,12 +8,18 @@ import HowItWorks from "@/components/HowItWorks";
 import Testimonials from "@/components/Testimonials";
 import Footer from "@/components/Footer";
 import BusinessMomentum from "@/components/BusinessMomentum";
+import ValueProps from "@/components/ValueProps";
+import FeatureShowcase from "@/components/FeatureShowcase";
+import FAQ from "@/components/FAQ";
+import CtaSection from "@/components/CtaSection";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       <HeroSection />
+      <ValueProps />
+      <FeatureShowcase />
       <FeaturedHomes />
       <SearchListings />
       <PopularCities />
@@ -21,6 +27,8 @@ const Index = () => {
       <HowItWorks />
       <BusinessMomentum />
       <Testimonials />
+      <FAQ />
+      <CtaSection />
       <Footer />
     </div>
   );
