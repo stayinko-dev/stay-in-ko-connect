@@ -33,7 +33,7 @@ const Navbar = () => {
         </Link>
 
         <div className="hidden items-center gap-1 text-sm font-medium md:flex">
-          <Link to="/" className="rounded-lg px-3 py-2 text-foreground/75 transition-base hover:bg-secondary hover:text-foreground">
+          <Link to="/search" className="rounded-lg px-3 py-2 text-foreground/75 transition-base hover:bg-secondary hover:text-foreground">
             Find a Place
           </Link>
           <Link to="/host" className="rounded-lg px-3 py-2 text-foreground/75 transition-base hover:bg-secondary hover:text-foreground">
@@ -77,7 +77,7 @@ const Navbar = () => {
 
       {mobileOpen ? (
         <div className="space-y-1 border-b border-border bg-card px-4 pb-4 md:hidden">
-          <Link to="/" className="block rounded-lg px-3 py-2.5 text-sm font-medium text-foreground/80 hover:bg-secondary" onClick={() => setMobileOpen(false)}>
+          <Link to="/search" className="block rounded-lg px-3 py-2.5 text-sm font-medium text-foreground/80 hover:bg-secondary" onClick={() => setMobileOpen(false)}>
             Find a Place
           </Link>
           <Link to="/host" className="block rounded-lg px-3 py-2.5 text-sm font-medium text-foreground/80 hover:bg-secondary" onClick={() => setMobileOpen(false)}>
