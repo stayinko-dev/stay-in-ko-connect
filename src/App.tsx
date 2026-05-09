@@ -12,6 +12,9 @@ import SignUp from "./pages/SignUp.tsx";
 import Login from "./pages/Login.tsx";
 import ForgotPassword from "./pages/ForgotPassword.tsx";
 import MyPage from "./pages/MyPage.tsx";
+import Search from "./pages/Search.tsx";
+import ListingDetail from "./pages/ListingDetail.tsx";
+import HostListingNew from "./pages/HostListingNew.tsx";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +27,16 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/properties/:id" element={<ListingDetail />} />
+            <Route
+              path="/host/properties/new"
+              element={
+                <ProtectedRoute>
+                  <HostListingNew />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/host"
               element={
