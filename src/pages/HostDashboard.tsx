@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -78,6 +78,7 @@ const emptySettlement: SettlementForm = {
 
 const HostDashboard = () => {
   const { user } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [tab, setTab] = useState("overview");
   const [loading, setLoading] = useState(true);
   const [showWizard, setShowWizard] = useState(false);
@@ -88,6 +89,15 @@ const HostDashboard = () => {
   const [bookings, setBookings] = useState<DashboardBooking[]>([]);
   const [messages, setMessages] = useState<DashboardMessage[]>([]);
   const [settlement, setSettlement] = useState<SettlementForm>(emptySettlement);
+
+  useEffect(() => {
+    if (searchParams.get("new") === "1") {
+      setShowWizard(true);
+      const next = new URLSearchParams(searchParams);
+      next.delete("new");
+      setSearchParams(next, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   useEffect(() => {
     if (!user) return;
