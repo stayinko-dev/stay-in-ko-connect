@@ -1,5 +1,6 @@
-import { ArrowRight, Search, ShieldCheck, Sparkles, Star } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { ArrowRight, MapPin, Search, ShieldCheck, Sparkles, Star } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import heroBg from "@/assets/hero-bg.jpg";
@@ -10,9 +11,24 @@ const trustChips = [
   { icon: Star, label: "4.9 / 5 guest rating" },
 ];
 
+const quickFilters = [
+  { label: "Independent Space", to: "/search?propertyType=studio" },
+  { label: "Coliving", to: "/search?propertyType=coliving" },
+  { label: "Female Only", to: "/search?propertyType=women_only" },
+  { label: "No Deposit", to: "/search?nodeposit=true" },
+  { label: "Near University", to: "/search?university=" },
+  { label: "Officetel", to: "/search?propertyType=officeTel" },
+  { label: "Short Stay", to: "/search?stayType=short" },
+];
+
 const HeroSection = () => {
-  const scrollToSearch = () => {
-    document.getElementById("search-listings")?.scrollIntoView({ behavior: "smooth" });
+  const navigate = useNavigate();
+  const [location, setLocation] = useState("");
+
+  const submitSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = location.trim();
+    navigate(q ? `/search?keyword=${encodeURIComponent(q)}` : "/search");
   };
 
   return (
@@ -38,14 +54,38 @@ const HeroSection = () => {
               Search verified stays, message hosts in English, and book without massive deposits — all in one place.
             </p>
 
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button size="xl" variant="gradient" onClick={scrollToSearch} className="shadow-glow">
+            <form onSubmit={submitSearch} className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <div className="flex flex-1 items-center gap-2 rounded-xl border border-border bg-card px-4 py-3 shadow-soft">
+                <MapPin className="h-5 w-5 shrink-0 text-primary" />
+                <input
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder="Location, university or keyword..."
+                  className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+                />
+              </div>
+              <Button type="submit" size="xl" variant="gradient" className="shadow-glow">
                 <Search className="h-5 w-5" />
                 Find a stay
               </Button>
-              <Button asChild size="xl" variant="outline">
-                <Link to="/host">
-                  List your place
+            </form>
+
+            <div className="mt-4 flex flex-wrap gap-2">
+              {quickFilters.map((q) => (
+                <Link
+                  key={q.label}
+                  to={q.to}
+                  className="rounded-full border border-border bg-card/70 px-3.5 py-1.5 text-xs font-medium text-foreground/80 backdrop-blur transition-base hover:border-primary hover:text-primary"
+                >
+                  {q.label}
+                </Link>
+              ))}
+            </div>
+
+            <div className="mt-6">
+              <Button asChild size="lg" variant="outline">
+                <Link to="/host/properties/new">
+                  List your home
                   <ArrowRight className="h-5 w-5" />
                 </Link>
               </Button>

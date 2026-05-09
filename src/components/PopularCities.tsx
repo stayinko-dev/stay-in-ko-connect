@@ -1,16 +1,25 @@
+import { Link } from "react-router-dom";
 import citySeoul from "@/assets/city-seoul.jpg";
 import cityBusan from "@/assets/city-busan.jpg";
 import cityDaejeon from "@/assets/city-daejeon.jpg";
 import cityGwangju from "@/assets/city-gwangju.jpg";
+import { useListings } from "@/hooks/useListings";
 
-const cities = [
-  { name: "Seoul", properties: 6, image: citySeoul },
-  { name: "Busan", properties: 1, image: cityBusan },
-  { name: "Daejeon", properties: 1, image: cityDaejeon },
-  { name: "Gwangju", properties: 1, image: cityGwangju },
-];
+const cityImages: Record<string, string> = {
+  Seoul: citySeoul,
+  Busan: cityBusan,
+  Daejeon: cityDaejeon,
+  Gwangju: cityGwangju,
+};
 
 const PopularCities = () => {
+  const { listings } = useListings();
+  const cities = ["Seoul", "Busan", "Daejeon", "Gwangju"].map((name) => ({
+    name,
+    image: cityImages[name],
+    properties: listings.filter((l) => (l.city || "").toLowerCase() === name.toLowerCase()).length,
+  }));
+
   return (
     <section className="py-16 md:py-24 bg-secondary/50">
       <div className="container mx-auto px-4 lg:px-8">
@@ -23,10 +32,10 @@ const PopularCities = () => {
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {cities.map((city) => (
-            <a
+            <Link
               key={city.name}
-              href="#"
-              className="group relative aspect-square rounded-2xl overflow-hidden"
+              to={`/search?city=${city.name}`}
+              className="group relative aspect-square rounded-2xl overflow-hidden shadow-soft transition-base hover:-translate-y-1 hover:shadow-floating"
             >
               <img
                 src={city.image}
@@ -39,9 +48,11 @@ const PopularCities = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-foreground/20 to-transparent" />
               <div className="absolute bottom-4 left-4">
                 <h3 className="text-xl font-display font-bold text-primary-foreground">{city.name}</h3>
-                <p className="text-sm text-primary-foreground/80">{city.properties} properties</p>
+                <p className="text-sm text-primary-foreground/80">
+                  {city.properties} {city.properties === 1 ? "property" : "properties"}
+                </p>
               </div>
-            </a>
+            </Link>
           ))}
         </div>
       </div>
