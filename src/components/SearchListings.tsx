@@ -1,7 +1,9 @@
 import { useMemo, useState } from "react";
-import { Bath, BedDouble, Loader2, MapPin, Search, SlidersHorizontal, Star, Users } from "lucide-react";
-import ListingDetailModal from "./ListingDetailModal";
-import { ListingRow, resolveImage, useListings } from "@/hooks/useListings";
+import { Loader2, Search, SlidersHorizontal } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useListings } from "@/hooks/useListings";
+import ListingCard from "./ListingCard";
+import { Button } from "@/components/ui/button";
 
 const universities = [
   "All",
@@ -36,8 +38,6 @@ const SearchListings = () => {
   const [selectedUniversity, setSelectedUniversity] = useState("All");
   const [selectedType, setSelectedType] = useState("All");
   const [selectedPriceRange, setSelectedPriceRange] = useState(0);
-  const [selectedListing, setSelectedListing] = useState<ListingRow | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
 
   const filteredListings = useMemo(() => {
     return listings.filter((listing) => {
@@ -52,11 +52,6 @@ const SearchListings = () => {
       return matchesSearch && matchesUni && matchesType && matchesPrice;
     });
   }, [listings, searchQuery, selectedPriceRange, selectedType, selectedUniversity]);
-
-  const openDetail = (listing: ListingRow) => {
-    setSelectedListing(listing);
-    setModalOpen(true);
-  };
 
   return (
     <section id="search-listings" className="bg-background py-16 md:py-24">
@@ -117,74 +112,9 @@ const SearchListings = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filteredListings.map((listing) => {
-              const cover = listing.images?.[0] ? resolveImage(listing.images[0]) : "";
-              const tags = listing.tags || [];
-              const tagColors = listing.tag_colors || [];
-
-              return (
-                <button
-                  key={listing.id}
-                  type="button"
-                  onClick={() => openDetail(listing)}
-                  className="group overflow-hidden rounded-2xl bg-card text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
-                >
-                  <div className="relative aspect-[4/3] overflow-hidden">
-                    <img
-                      src={cover}
-                      alt={listing.title}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      loading="lazy"
-                    />
-                    <div className="absolute top-3 left-3 flex gap-2">
-                      {tags.map((tag, index) => (
-                        <span
-                          key={`${listing.id}-${tag}-${index}`}
-                          className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                            tagColors[index]
-                              ? "bg-primary text-primary-foreground"
-                              : "bg-card/90 text-foreground backdrop-blur-sm"
-                          }`}
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                    {listing.no_deposit ? (
-                      <div className="absolute top-3 right-3 rounded-full bg-badge-green px-3 py-1 text-xs font-bold text-badge-green-foreground">
-                        No Deposit
-                      </div>
-                    ) : null}
-                  </div>
-
-                  <div className="p-4">
-                    <div className="mb-2 flex items-center justify-between">
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <MapPin className="h-3.5 w-3.5" />
-                        {listing.location_label}
-                      </div>
-                      <div className="flex items-center gap-1 text-sm font-semibold">
-                        <Star className="h-4 w-4 fill-star text-star" />
-                        {Number(listing.rating).toFixed(1)}
-                      </div>
-                    </div>
-
-                    <h3 className="mb-2 font-semibold text-foreground">{listing.title}</h3>
-
-                    <div className="mb-3 flex items-center gap-4 text-xs text-muted-foreground">
-                      <span className="flex items-center gap-1"><Users className="h-3.5 w-3.5" />{listing.guests} guests</span>
-                      <span className="flex items-center gap-1"><BedDouble className="h-3.5 w-3.5" />{listing.beds} bed</span>
-                      <span className="flex items-center gap-1"><Bath className="h-3.5 w-3.5" />{listing.baths} bath</span>
-                    </div>
-
-                    <div>
-                      <span className="text-lg font-bold text-foreground">{listing.price_display || `${listing.price.toLocaleString("ko-KR")}원`}</span>
-                      <span className="text-sm text-muted-foreground"> / {listing.period}</span>
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
+            {filteredListings.slice(0, 6).map((listing) => (
+              <ListingCard key={listing.id} listing={listing} />
+            ))}
           </div>
         )}
 
@@ -194,9 +124,15 @@ const SearchListings = () => {
             <p className="mt-1 text-sm text-muted-foreground">필터를 조금 넓혀서 다시 찾아보세요.</p>
           </div>
         ) : null}
-      </div>
 
-      <ListingDetailModal listing={selectedListing} open={modalOpen} onOpenChange={setModalOpen} />
+        {!loading && filteredListings.length > 0 && (
+          <div className="mt-10 flex justify-center">
+            <Button asChild size="lg" variant="outline">
+              <Link to="/search">View all properties</Link>
+            </Button>
+          </div>
+        )}
+      </div>
     </section>
   );
 };
