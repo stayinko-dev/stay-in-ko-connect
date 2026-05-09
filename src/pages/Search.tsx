@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import ListingCard from "@/components/ListingCard";
 import { Button } from "@/components/ui/button";
 import { useListings } from "@/hooks/useListings";
-import { EmptyState } from "@/components/ui/empty-state";
+import EmptyState from "@/components/ui/empty-state";
 
 const cities = ["All", "Seoul", "Busan", "Daejeon", "Gwangju"];
 const propertyTypes = [
@@ -173,7 +173,7 @@ const SearchPage = () => {
             icon={SearchIcon}
             title="No listings match"
             description="Try widening your filters or clearing the search."
-            action={<Button onClick={clearAll}>Reset filters</Button>}
+            action={{ label: "Reset filters", onClick: clearAll }}
           />
         ) : (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
