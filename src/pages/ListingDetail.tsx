@@ -171,13 +171,71 @@ const ListingDetail = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      <main className="container mx-auto px-4 py-8 lg:px-8">
-        <Link to="/search" className="mb-6 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="h-4 w-4" /> Back to search
-        </Link>
+      <main className="pb-24 lg:pb-8">
+        {/* Mobile: full-bleed image gallery with snap scroll */}
+        <div className="relative lg:container lg:mx-auto lg:px-8 lg:py-8">
+          <Link
+            to="/search"
+            className="absolute top-4 left-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-background/80 backdrop-blur-sm shadow-soft lg:hidden"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Link>
 
-        <div className="grid gap-8 lg:grid-cols-[1.4fr_0.9fr]">
-          <div>
+          <div className="lg:hidden">
+            <div className="flex snap-x snap-mandatory overflow-x-auto scrollbar-hide">
+              {images.length > 0 ? (
+                images.map((img, i) => (
+                  <div
+                    key={i}
+                    className="relative w-screen shrink-0 snap-center"
+                    onScroll={(e) => {
+                      const el = e.currentTarget;
+                      const idx = Math.round(el.scrollLeft / el.clientWidth);
+                      setSelectedImage(idx);
+                    }}
+                  >
+                    <img
+                      src={resolveImage(img)}
+                      alt={`${listing.title} ${i + 1}`}
+                      className="aspect-[4/3] w-full object-cover"
+                    />
+                  </div>
+                ))
+              ) : (
+                <div className="w-screen shrink-0 snap-center">
+                  <img
+                    src="/placeholder.svg"
+                    alt={listing.title}
+                    className="aspect-[4/3] w-full object-cover"
+                  />
+                </div>
+              )}
+            </div>
+            {/* Dot indicators */}
+            {images.length > 1 && (
+              <div className="flex justify-center gap-1.5 py-3">
+                {images.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setSelectedImage(i)}
+                    className={`h-1.5 rounded-full transition-all ${
+                      i === selectedImage ? "w-4 bg-primary" : "w-1.5 bg-muted-foreground/30"
+                    }`}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Desktop image gallery */}
+          <div className="hidden lg:block">
+            <Link
+              to="/search"
+              className="mb-6 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+            >
+              <ArrowLeft className="h-4 w-4" /> Back to search
+            </Link>
+
             <div className="relative overflow-hidden rounded-2xl border border-border shadow-soft">
               <img
                 src={resolveImage(images[selectedImage] || "")}
@@ -222,38 +280,66 @@ const ListingDetail = () => {
                 ))}
               </div>
             )}
+          </div>
+        </div>
 
-            <div className="mt-8">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <MapPin className="h-4 w-4" />
-                {listing.location_label}
-                {listing.university_area && <span>· {listing.university_area}</span>}
-              </div>
-              <h1 className="mt-2 text-3xl font-display font-bold text-foreground">{listing.title}</h1>
-              <div className="mt-2 flex items-center gap-3 text-sm">
-                <span className="flex items-center gap-1 font-semibold">
-                  <Star className="h-4 w-4 fill-star text-star" /> {Number(listing.rating).toFixed(1)}
-                </span>
-                <span className="text-muted-foreground">·</span>
-                <span className="flex items-center gap-1 text-muted-foreground"><Users className="h-4 w-4" /> {listing.guests} guests</span>
-                <span className="flex items-center gap-1 text-muted-foreground"><BedDouble className="h-4 w-4" /> {listing.beds} bed</span>
-                <span className="flex items-center gap-1 text-muted-foreground"><Bath className="h-4 w-4" /> {listing.baths} bath</span>
-              </div>
+        <div className="container mx-auto px-4 pt-4 lg:grid lg:grid-cols-[1.4fr_0.9fr] lg:gap-8 lg:px-8 lg:pt-8">
+          <div>
+            {/* Mobile header info */}
+            <div className="flex items-center gap-2 text-sm text-muted-foreground lg:mt-8">
+              <MapPin className="h-4 w-4" />
+              {listing.location_label}
+              {listing.university_area && <span>· {listing.university_area}</span>}
+            </div>
+            <h1 className="mt-2 text-2xl font-display font-bold text-foreground lg:text-3xl">
+              {listing.title}
+            </h1>
+
+            <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+              <span className="flex items-center gap-1 font-semibold">
+                <Star className="h-4 w-4 fill-star text-star" /> {Number(listing.rating).toFixed(1)}
+              </span>
+              <span className="text-muted-foreground">·</span>
+              <span className="flex items-center gap-1 text-muted-foreground">
+                <Users className="h-4 w-4" /> {listing.guests} guests
+              </span>
+              <span className="flex items-center gap-1 text-muted-foreground">
+                <BedDouble className="h-4 w-4" /> {listing.beds} bed
+              </span>
+              <span className="flex items-center gap-1 text-muted-foreground">
+                <Bath className="h-4 w-4" /> {listing.baths} bath
+              </span>
             </div>
 
-            <p className="mt-6 leading-relaxed text-foreground/80">{listing.description}</p>
+            {/* Desktop tags (mobile tags shown on image) */}
+            <div className="mt-3 hidden flex-wrap gap-2 lg:flex">
+              {tags.map((tag, i) => (
+                <Badge
+                  key={`dt-${listing.id}-${tag}-${i}`}
+                  className={
+                    tagColors[i]
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-card/90 text-foreground backdrop-blur-sm"
+                  }
+                >
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+
+            <p className="mt-5 leading-relaxed text-foreground/80">{listing.description}</p>
 
             {(listing.nearby_subway || listing.nearby_university) && (
-              <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              <div className="mt-5 grid gap-2 sm:grid-cols-2 lg:gap-3">
                 {listing.nearby_subway && (
-                  <div className="flex items-center gap-3 rounded-xl bg-secondary p-4">
-                    <Train className="h-5 w-5 text-primary" />
+                  <div className="flex items-center gap-3 rounded-xl bg-secondary p-3 lg:p-4">
+                    <Train className="h-5 w-5 shrink-0 text-primary" />
                     <span className="text-sm">{listing.nearby_subway}</span>
                   </div>
                 )}
                 {listing.nearby_university && (
-                  <div className="flex items-center gap-3 rounded-xl bg-secondary p-4">
-                    <GraduationCap className="h-5 w-5 text-primary" />
+                  <div className="flex items-center gap-3 rounded-xl bg-secondary p-3 lg:p-4">
+                    <GraduationCap className="h-5 w-5 shrink-0 text-primary" />
                     <span className="text-sm">{listing.nearby_university}</span>
                   </div>
                 )}
@@ -261,23 +347,25 @@ const ListingDetail = () => {
             )}
 
             {amenities.length > 0 && (
-              <div className="mt-8">
-                <h2 className="mb-3 text-lg font-semibold">Amenities</h2>
+              <div className="mt-6 lg:mt-8">
+                <h2 className="mb-2 text-base font-semibold lg:mb-3 lg:text-lg">Amenities</h2>
                 <div className="flex flex-wrap gap-2">
                   {amenities.map((a) => (
-                    <Badge key={a} variant="secondary">{a}</Badge>
+                    <Badge key={a} variant="secondary">
+                      {a}
+                    </Badge>
                   ))}
                 </div>
               </div>
             )}
 
-            <div className="mt-8 rounded-2xl border border-border bg-card p-5">
+            <div className="mt-6 rounded-2xl border border-border bg-card p-4 lg:mt-8 lg:p-5">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Hosted by</p>
                   <p className="font-semibold">{listing.host_name}</p>
                   {listing.host_response && (
-                    <p className="text-xs text-muted-foreground mt-1">{listing.host_response}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">{listing.host_response}</p>
                   )}
                 </div>
                 <Button variant="outline" size="sm" onClick={() => setShowMessage((v) => !v)}>
@@ -292,20 +380,24 @@ const ListingDetail = () => {
                     placeholder="Hi! I'm interested in your place..."
                     className="h-24 w-full resize-none rounded-lg border border-border bg-background p-3 text-sm outline-none focus:border-ring"
                   />
-                  <Button size="sm" onClick={sendMessage} disabled={!message.trim()}>Send message</Button>
+                  <Button size="sm" onClick={sendMessage} disabled={!message.trim()}>
+                    Send message
+                  </Button>
                 </div>
               )}
             </div>
           </div>
 
-          {/* Booking sidebar */}
-          <aside className="lg:sticky lg:top-24 lg:self-start">
+          {/* Desktop booking sidebar */}
+          <aside className="hidden lg:sticky lg:top-24 lg:block lg:self-start">
             <div className="rounded-2xl border border-border bg-card p-6 shadow-floating">
               <div className="mb-4">
-                <span className="text-3xl font-bold">{listing.price_display || `${listing.price.toLocaleString("ko-KR")}원`}</span>
+                <span className="text-3xl font-bold">
+                  {listing.price_display || `${listing.price.toLocaleString("ko-KR")}원`}
+                </span>
                 <span className="text-muted-foreground"> / {listing.period}</span>
                 {listing.deposit_display && !listing.no_deposit && (
-                  <p className="text-xs text-muted-foreground mt-1">{listing.deposit_display}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{listing.deposit_display}</p>
                 )}
               </div>
 
@@ -346,6 +438,30 @@ const ListingDetail = () => {
           </aside>
         </div>
       </main>
+
+      {/* Mobile sticky bottom booking bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background/95 backdrop-blur-md px-4 py-3 lg:hidden">
+        <div className="flex items-center justify-between gap-4">
+          <div className="shrink-0">
+            <span className="text-xl font-bold">
+              {listing.price_display || `${listing.price.toLocaleString("ko-KR")}원`}
+            </span>
+            <span className="text-sm text-muted-foreground"> / {listing.period}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleFavorite}
+              disabled={savingFav}
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card shadow-soft"
+            >
+              <Heart className={`h-5 w-5 ${isFav ? "fill-primary text-primary" : "text-foreground"}`} />
+            </button>
+            <Button size="default" onClick={handleBooking} className="px-6">
+              {listing.no_deposit ? "Book now" : "Request"}
+            </Button>
+          </div>
+        </div>
+      </div>
 
       <Footer />
     </div>
