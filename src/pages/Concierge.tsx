@@ -11,6 +11,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import TranslatableText from "@/components/TranslatableText";
+import { SUPPORTED_TARGETS, type TargetLang } from "@/hooks/useTranslate";
 import {
   SERVICE_CATEGORIES,
   HELPERS,
@@ -25,6 +27,7 @@ const Concierge = () => {
   const [query, setQuery] = useState("");
   const [requestOpen, setRequestOpen] = useState(false);
   const [presetHelper, setPresetHelper] = useState<Helper | null>(null);
+  const [targetLang, setTargetLang] = useState<TargetLang>("en");
 
   const filteredHelpers = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -254,7 +257,18 @@ const Concierge = () => {
             <CardContent className="p-5">
               <div className="mb-3 flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-foreground">Trending in community</h3>
-                <Link to="#" className="text-xs text-primary hover:underline">More</Link>
+                <select
+                  value={targetLang}
+                  onChange={(e) => setTargetLang(e.target.value as TargetLang)}
+                  className="rounded-md border border-border bg-card px-2 py-1 text-[11px] font-medium text-foreground"
+                  aria-label="Translate target language"
+                >
+                  {SUPPORTED_TARGETS.map((l) => (
+                    <option key={l.code} value={l.code}>
+                      Translate → {l.label}
+                    </option>
+                  ))}
+                </select>
               </div>
               <ul className="space-y-3">
                 {COMMUNITY_POSTS.map((p) => (
@@ -267,11 +281,14 @@ const Concierge = () => {
                       <Badge variant="outline" className="ml-auto text-[10px]">{p.tag}</Badge>
                     </div>
                     <h4 className="mt-1.5 text-sm font-semibold text-foreground">{p.title}</h4>
-                    <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">{p.excerpt}</p>
+                    <TranslatableText
+                      text={p.excerpt}
+                      target={targetLang}
+                      className="mt-1"
+                    />
                     <div className="mt-2 flex items-center gap-3 text-[11px] text-muted-foreground">
                       <span>♥ {p.likes}</span>
                       <span className="flex items-center gap-1"><MessageCircle className="h-3 w-3" /> {p.comments}</span>
-                      <button className="ml-auto text-primary hover:underline">Translate</button>
                     </div>
                   </li>
                 ))}
