@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
@@ -16,6 +17,8 @@ import Search from "./pages/Search.tsx";
 import ListingDetail from "./pages/ListingDetail.tsx";
 import HostListingNew from "./pages/HostListingNew.tsx";
 
+const Concierge = lazy(() => import("./pages/Concierge.tsx"));
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -25,10 +28,12 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <Suspense fallback={<div className="flex min-h-screen items-center justify-center text-sm text-muted-foreground">Loading…</div>}>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/search" element={<Search />} />
             <Route path="/properties/:id" element={<ListingDetail />} />
+            <Route path="/concierge" element={<Concierge />} />
             <Route
               path="/host/properties/new"
               element={
@@ -58,6 +63,7 @@ const App = () => (
             />
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </Suspense>
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>

@@ -36,6 +36,9 @@ const Navbar = () => {
           <Link to="/search" className="rounded-lg px-3 py-2 text-foreground/75 transition-base hover:bg-secondary hover:text-foreground">
             Find a Place
           </Link>
+          <Link to="/concierge" className="rounded-lg px-3 py-2 text-foreground/75 transition-base hover:bg-secondary hover:text-foreground">
+            Concierge
+          </Link>
           <Link to="/host" className="rounded-lg px-3 py-2 text-foreground/75 transition-base hover:bg-secondary hover:text-foreground">
             Host Dashboard
           </Link>
@@ -79,6 +82,9 @@ const Navbar = () => {
         <div className="space-y-1 border-b border-border bg-card px-4 pb-4 md:hidden">
           <Link to="/search" className="block rounded-lg px-3 py-2.5 text-sm font-medium text-foreground/80 hover:bg-secondary" onClick={() => setMobileOpen(false)}>
             Find a Place
+          </Link>
+          <Link to="/concierge" className="block rounded-lg px-3 py-2.5 text-sm font-medium text-foreground/80 hover:bg-secondary" onClick={() => setMobileOpen(false)}>
+            Concierge
           </Link>
           <Link to="/host" className="block rounded-lg px-3 py-2.5 text-sm font-medium text-foreground/80 hover:bg-secondary" onClick={() => setMobileOpen(false)}>
             Host Dashboard
