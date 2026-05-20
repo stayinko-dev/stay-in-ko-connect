@@ -388,6 +388,14 @@ const RequestHelpDialog = ({
               rows={3}
               className="mt-1.5"
             />
+            {details.trim().length > 0 && (
+              <div className="mt-2 rounded-lg border border-dashed border-border/70 bg-secondary/40 p-2">
+                <TranslatableText text={details} target="en" sourceHint={undefined} />
+                <p className="mt-1 text-[10px] text-muted-foreground">
+                  Helpers usually read in English — translate before sending for faster matches.
+                </p>
+              </div>
+            )}
           </div>
           <label className="flex items-center gap-2 text-xs text-muted-foreground">
             <input
