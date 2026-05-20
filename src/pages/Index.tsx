@@ -12,6 +12,7 @@ import ValueProps from "@/components/ValueProps";
 import FeatureShowcase from "@/components/FeatureShowcase";
 import FAQ from "@/components/FAQ";
 import CtaSection from "@/components/CtaSection";
+import ConciergeSection from "@/components/ConciergeSection";
 
 const Index = () => {
   return (
@@ -23,6 +24,7 @@ const Index = () => {
       <FeaturedHomes />
       <SearchListings />
       <PopularCities />
+      <ConciergeSection />
       <StatsSection />
       <HowItWorks />
       <BusinessMomentum />
