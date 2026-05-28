@@ -39,6 +39,7 @@ const SignUp = () => {
       email: form.email,
       password: form.password,
       options: {
+        emailRedirectTo: `${window.location.origin}/login`,
         data: {
           display_name: form.name,
         },

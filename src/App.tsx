@@ -12,6 +12,7 @@ import NotFound from "./pages/NotFound.tsx";
 import SignUp from "./pages/SignUp.tsx";
 import Login from "./pages/Login.tsx";
 import ForgotPassword from "./pages/ForgotPassword.tsx";
+import ResetPassword from "./pages/ResetPassword.tsx";
 import MyPage from "./pages/MyPage.tsx";
 import Search from "./pages/Search.tsx";
 import ListingDetail from "./pages/ListingDetail.tsx";
@@ -53,6 +54,7 @@ const App = () => (
             <Route path="/signup" element={<SignUp />} />
             <Route path="/login" element={<Login />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route
               path="/mypage"
               element={

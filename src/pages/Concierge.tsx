@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import TranslatableText from "@/components/TranslatableText";
 import { SUPPORTED_TARGETS, type TargetLang } from "@/hooks/useTranslate";
 import {
@@ -325,10 +326,31 @@ const RequestHelpDialog = ({
   const [area, setArea] = useState("");
   const [details, setDetails] = useState("");
   const [urgent, setUrgent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!area.trim()) {
       toast.error("Please enter your location.");
+      return;
+    }
+    setSubmitting(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      setSubmitting(false);
+      toast.error("Please sign in to send a request.");
+      return;
+    }
+    const { error } = await supabase.from("help_requests").insert({
+      user_id: user.id,
+      helper_id: helper?.id ?? null,
+      service,
+      area: area.trim(),
+      details: details.trim() || null,
+      urgent,
+    });
+    setSubmitting(false);
+    if (error) {
+      toast.error(error.message);
       return;
     }
     toast.success(
@@ -409,7 +431,9 @@ const RequestHelpDialog = ({
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button onClick={handleSubmit}>Send request</Button>
+          <Button onClick={handleSubmit} disabled={submitting}>
+            {submitting ? "Sending…" : "Send request"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
