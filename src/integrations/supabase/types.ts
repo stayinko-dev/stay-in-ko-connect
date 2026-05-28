@@ -99,6 +99,48 @@ export type Database = {
           },
         ]
       }
+      help_requests: {
+        Row: {
+          area: string
+          created_at: string
+          details: string | null
+          helper_id: string | null
+          id: string
+          metadata: Json | null
+          service: string
+          status: string
+          updated_at: string
+          urgent: boolean
+          user_id: string
+        }
+        Insert: {
+          area: string
+          created_at?: string
+          details?: string | null
+          helper_id?: string | null
+          id?: string
+          metadata?: Json | null
+          service: string
+          status?: string
+          updated_at?: string
+          urgent?: boolean
+          user_id: string
+        }
+        Update: {
+          area?: string
+          created_at?: string
+          details?: string | null
+          helper_id?: string | null
+          id?: string
+          metadata?: Json | null
+          service?: string
+          status?: string
+          updated_at?: string
+          urgent?: boolean
+          user_id?: string
+        }
+        Relationships: []
+      }
       listings: {
         Row: {
           address: string | null
@@ -384,7 +426,36 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string | null
+          display_name: string | null
+          id: string | null
+          role: string | null
+          user_id: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          id?: string | null
+          role?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          id?: string | null
+          role?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
