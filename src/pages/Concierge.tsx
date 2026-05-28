@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import TranslatableText from "@/components/TranslatableText";
 import { SUPPORTED_TARGETS, type TargetLang } from "@/hooks/useTranslate";
 import {
