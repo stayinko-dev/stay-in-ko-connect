@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import DeleteAccountDialog from "@/components/DeleteAccountDialog";
 
 type ProfileForm = {
   display_name: string;
@@ -192,6 +193,12 @@ const MyPage = () => {
                     <LogOut className="h-4 w-4" />
                     Log out
                   </Button>
+                  <div className="mt-3 border-t border-border pt-3">
+                    <p className="mb-2 text-xs text-muted-foreground">
+                      Need to leave? Account deletion follows our 30-day recovery policy.
+                    </p>
+                    <DeleteAccountDialog />
+                  </div>
                 </CardContent>
               </Card>
             </section>
