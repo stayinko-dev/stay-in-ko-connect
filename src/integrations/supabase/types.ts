@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      account_deletions: {
+        Row: {
+          cancelled_at: string | null
+          created_at: string
+          display_name: string | null
+          email: string | null
+          id: string
+          profile_snapshot: Json
+          purged_at: string | null
+          reason: string | null
+          requested_at: string
+          scheduled_purge_at: string
+          stats_snapshot: Json
+          user_id: string
+        }
+        Insert: {
+          cancelled_at?: string | null
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          profile_snapshot?: Json
+          purged_at?: string | null
+          reason?: string | null
+          requested_at?: string
+          scheduled_purge_at: string
+          stats_snapshot?: Json
+          user_id: string
+        }
+        Update: {
+          cancelled_at?: string | null
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          profile_snapshot?: Json
+          purged_at?: string | null
+          reason?: string | null
+          requested_at?: string
+          scheduled_purge_at?: string
+          stats_snapshot?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
       bookings: {
         Row: {
           check_in: string
@@ -307,6 +352,8 @@ export type Database = {
           avatar_url: string | null
           bio: string | null
           created_at: string
+          deleted_at: string | null
+          deletion_scheduled_at: string | null
           display_name: string | null
           id: string
           metadata: Json | null
@@ -319,6 +366,8 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
+          deleted_at?: string | null
+          deletion_scheduled_at?: string | null
           display_name?: string | null
           id?: string
           metadata?: Json | null
@@ -331,6 +380,8 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
+          deleted_at?: string | null
+          deletion_scheduled_at?: string | null
           display_name?: string | null
           id?: string
           metadata?: Json | null
@@ -458,7 +509,31 @@ export type Database = {
       }
     }
     Functions: {
+      cancel_account_deletion: { Args: never; Returns: boolean }
       get_my_phone: { Args: never; Returns: string }
+      request_account_deletion: {
+        Args: { _reason?: string }
+        Returns: {
+          cancelled_at: string | null
+          created_at: string
+          display_name: string | null
+          email: string | null
+          id: string
+          profile_snapshot: Json
+          purged_at: string | null
+          reason: string | null
+          requested_at: string
+          scheduled_purge_at: string
+          stats_snapshot: Json
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "account_deletions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
     }
     Enums: {
       [_ in never]: never
