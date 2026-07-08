@@ -36,20 +36,21 @@ Deno.serve(async (req) => {
     const action: "request" | "cancel" = body.action ?? "request";
     const reason: string | null = typeof body.reason === "string" ? body.reason.slice(0, 1000) : null;
 
-    // Run the RPC as the user (RLS-aware) — request_account_deletion uses auth.uid()
+    // RPCs are restricted to service_role; we validated the JWT above and pass user.id explicitly.
+    const adminClient = createClient(SUPABASE_URL, SERVICE_ROLE);
+
     if (action === "cancel") {
-      const { error } = await userClient.rpc("cancel_account_deletion");
+      const { error } = await adminClient.rpc("cancel_account_deletion", { _user_id: user.id });
       if (error) throw error;
       return new Response(JSON.stringify({ ok: true, cancelled: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const { data, error } = await userClient.rpc("request_account_deletion", { _reason: reason });
+    const { data, error } = await adminClient.rpc("request_account_deletion", { _reason: reason, _user_id: user.id });
     if (error) throw error;
 
     // Best-effort: enqueue confirmation email if email infra exists.
-    const adminClient = createClient(SUPABASE_URL, SERVICE_ROLE);
     const purgeAt = (data as any)?.scheduled_purge_at;
     const purgeDateStr = purgeAt ? new Date(purgeAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : "30 days from now";
 
