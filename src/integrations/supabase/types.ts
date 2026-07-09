@@ -70,6 +70,9 @@ export type Database = {
           listing_id: string
           message: string | null
           metadata: Json | null
+          payment_provider: string | null
+          payment_reference: string | null
+          payment_status: string
           status: string | null
           total_amount: number | null
           updated_at: string
@@ -84,6 +87,9 @@ export type Database = {
           listing_id: string
           message?: string | null
           metadata?: Json | null
+          payment_provider?: string | null
+          payment_reference?: string | null
+          payment_status?: string
           status?: string | null
           total_amount?: number | null
           updated_at?: string
@@ -98,6 +104,9 @@ export type Database = {
           listing_id?: string
           message?: string | null
           metadata?: Json | null
+          payment_provider?: string | null
+          payment_reference?: string | null
+          payment_status?: string
           status?: string | null
           total_amount?: number | null
           updated_at?: string
