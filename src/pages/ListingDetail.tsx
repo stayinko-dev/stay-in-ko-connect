@@ -19,10 +19,31 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerFooter,
+} from "@/components/ui/drawer";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { ListingRow, resolveImage } from "@/hooks/useListings";
 import { toast } from "sonner";
+import { paymentProvider } from "@/lib/payments";
+
+/** Adds `months` calendar months to a date and returns a new Date. */
+function addMonths(date: Date, months: number) {
+  const result = new Date(date);
+  result.setMonth(result.getMonth() + months);
+  return result;
+}
+
+function toDateOnly(date: Date) {
+  return date.toISOString().split("T")[0];
+}
 
 const ListingDetail = () => {
   const { id } = useParams();
@@ -32,6 +53,10 @@ const ListingDetail = () => {
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
   const [months, setMonths] = useState(1);
+  const [checkInDate, setCheckInDate] = useState<Date | undefined>(undefined);
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
+  const [booking, setBooking] = useState(false);
+  const [mobileBookingOpen, setMobileBookingOpen] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [message, setMessage] = useState("");
   const [isFav, setIsFav] = useState(false);
@@ -100,20 +125,95 @@ const ListingDetail = () => {
       return;
     }
     if (!listing) return;
-    const checkIn = new Date();
-    const checkOut = new Date();
-    checkOut.setMonth(checkOut.getMonth() + months);
-    const { error } = await supabase.from("bookings").insert({
-      listing_id: listing.id,
-      guest_id: user.id,
-      host_id: listing.host_id,
-      check_in: checkIn.toISOString().split("T")[0],
-      check_out: checkOut.toISOString().split("T")[0],
-      total_amount: listing.price * months,
-      status: "pending",
-    });
-    if (error) toast.error(error.message);
-    else toast.success("Booking request sent to the host.");
+    if (!checkInDate) {
+      toast.error("Please choose a check-in date first.");
+      setDatePickerOpen(true);
+      setMobileBookingOpen(true);
+      return;
+    }
+
+    const checkOutDate = addMonths(checkInDate, months);
+    const checkIn = toDateOnly(checkInDate);
+    const checkOut = toDateOnly(checkOutDate);
+
+    setBooking(true);
+    try {
+      // Friendly pre-check so the guest gets an immediate answer instead of
+      // a raw DB error. The real guarantee against double-booking is the
+      // `bookings_no_overlap` exclusion constraint in the database, which
+      // still applies below in case two guests submit at the same instant.
+      const { data: overlapping, error: overlapError } = await supabase
+        .from("bookings")
+        .select("id")
+        .eq("listing_id", listing.id)
+        .in("status", ["pending", "confirmed"])
+        .lt("check_in", checkOut)
+        .gt("check_out", checkIn)
+        .limit(1);
+
+      if (overlapError) {
+        toast.error(overlapError.message);
+        return;
+      }
+      if (overlapping && overlapping.length > 0) {
+        toast.error("Those dates are already booked. Please choose a different check-in date.");
+        return;
+      }
+
+      const totalAmount = listing.price * months;
+
+      const { data: newBooking, error } = await supabase
+        .from("bookings")
+        .insert({
+          listing_id: listing.id,
+          guest_id: user.id,
+          host_id: listing.host_id,
+          check_in: checkIn,
+          check_out: checkOut,
+          total_amount: totalAmount,
+          status: "pending",
+          payment_status: "unpaid",
+        })
+        .select("id")
+        .single();
+
+      if (error) {
+        // 23P01 = Postgres exclusion_violation, thrown by bookings_no_overlap
+        // if another booking for these dates slipped in between our
+        // pre-check above and this insert.
+        if ((error as { code?: string }).code === "23P01") {
+          toast.error("Those dates were just booked by someone else. Please pick different dates.");
+        } else {
+          toast.error(error.message);
+        }
+        return;
+      }
+
+      // No live payment gateway yet (see src/lib/payments) — this call is a
+      // stand-in so the booking flow already runs through the same code
+      // path a real PG integration will use later.
+      const checkout = await paymentProvider.createCheckout({
+        bookingId: newBooking.id,
+        amount: totalAmount,
+        orderName: `${listing.title} (${months}mo)`,
+        buyerEmail: user.email ?? undefined,
+      });
+
+      await supabase
+        .from("bookings")
+        .update({
+          payment_status: checkout.status,
+          payment_provider: checkout.provider,
+          payment_reference: checkout.reference ?? null,
+        })
+        .eq("id", newBooking.id);
+
+      toast.success("Booking request sent to the host. Payment integration is coming soon.");
+      setCheckInDate(undefined);
+      setMobileBookingOpen(false);
+    } finally {
+      setBooking(false);
+    }
   };
 
   const sendMessage = async () => {
@@ -403,7 +503,39 @@ const ListingDetail = () => {
 
               <div className="mb-4 rounded-xl bg-secondary p-4">
                 <div className="mb-3 flex items-center gap-2 text-sm font-semibold">
-                  <CalendarDays className="h-4 w-4 text-primary" /> Rental period
+                  <CalendarDays className="h-4 w-4 text-primary" /> Check-in date
+                </div>
+                <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
+                  <PopoverTrigger asChild>
+                    <button className="flex w-full items-center justify-between rounded-lg border border-border bg-card px-3 py-2 text-sm hover:bg-muted">
+                      <span className={checkInDate ? "text-foreground" : "text-muted-foreground"}>
+                        {checkInDate
+                          ? checkInDate.toLocaleDateString("en-US", {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            })
+                          : "Select a date"}
+                      </span>
+                      <CalendarDays className="h-4 w-4 text-muted-foreground" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={checkInDate}
+                      onSelect={(date) => {
+                        setCheckInDate(date);
+                        setDatePickerOpen(false);
+                      }}
+                      disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+
+                <div className="mb-3 mt-4 flex items-center gap-2 text-sm font-semibold">
+                  Rental period
                 </div>
                 <div className="grid grid-cols-4 gap-2">
                   {[1, 3, 6, 12].map((m) => (
@@ -420,14 +552,24 @@ const ListingDetail = () => {
                     </button>
                   ))}
                 </div>
+                {checkInDate && (
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    Check-out:{" "}
+                    {addMonths(checkInDate, months).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </p>
+                )}
                 <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
                   <span className="text-sm text-muted-foreground">Total</span>
                   <span className="text-lg font-bold">{totalPrice.toLocaleString("ko-KR")}원</span>
                 </div>
               </div>
 
-              <Button className="w-full" size="lg" onClick={handleBooking}>
-                {listing.no_deposit ? "Book with no deposit" : "Request booking"}
+              <Button className="w-full" size="lg" onClick={handleBooking} disabled={booking}>
+                {booking ? "Booking..." : listing.no_deposit ? "Book with no deposit" : "Request booking"}
               </Button>
 
               <div className="mt-3 flex items-center justify-center gap-2 text-xs text-muted-foreground">
@@ -456,12 +598,68 @@ const ListingDetail = () => {
             >
               <Heart className={`h-5 w-5 ${isFav ? "fill-primary text-primary" : "text-foreground"}`} />
             </button>
-            <Button size="default" onClick={handleBooking} className="px-6">
+            <Button size="default" onClick={() => setMobileBookingOpen(true)} className="px-6">
               {listing.no_deposit ? "Book now" : "Request"}
             </Button>
           </div>
         </div>
       </div>
+
+      {/* Mobile booking drawer: check-in date + rental period + confirm */}
+      <Drawer open={mobileBookingOpen} onOpenChange={setMobileBookingOpen}>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>Choose your dates</DrawerTitle>
+          </DrawerHeader>
+          <div className="px-4 pb-2">
+            <div className="mb-3 flex items-center gap-2 text-sm font-semibold">
+              <CalendarDays className="h-4 w-4 text-primary" /> Check-in date
+            </div>
+            <div className="flex justify-center rounded-lg border border-border">
+              <Calendar
+                mode="single"
+                selected={checkInDate}
+                onSelect={(date) => setCheckInDate(date)}
+                disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+              />
+            </div>
+
+            <div className="mb-3 mt-4 text-sm font-semibold">Rental period</div>
+            <div className="grid grid-cols-4 gap-2">
+              {[1, 3, 6, 12].map((m) => (
+                <button
+                  key={m}
+                  onClick={() => setMonths(m)}
+                  className={`rounded-lg py-2 text-sm font-medium transition-base ${
+                    months === m ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground"
+                  }`}
+                >
+                  {m}mo
+                </button>
+              ))}
+            </div>
+            {checkInDate && (
+              <p className="mt-2 text-xs text-muted-foreground">
+                Check-out:{" "}
+                {addMonths(checkInDate, months).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })}
+              </p>
+            )}
+            <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
+              <span className="text-sm text-muted-foreground">Total</span>
+              <span className="text-lg font-bold">{totalPrice.toLocaleString("ko-KR")}원</span>
+            </div>
+          </div>
+          <DrawerFooter>
+            <Button onClick={handleBooking} disabled={booking || !checkInDate}>
+              {booking ? "Booking..." : listing.no_deposit ? "Book with no deposit" : "Request booking"}
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
 
       <Footer />
     </div>

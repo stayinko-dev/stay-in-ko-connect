@@ -42,7 +42,14 @@ const Privacy = () => (
         </div>
         <div>
           <h2 className="text-xl font-semibold">6. Security</h2>
-          <p>We use encryption in transit and at rest, role-based access controls, and routine security audits. No system is 100% secure; report concerns to <a className="text-primary underline" href="mailto:security@stayinko.com">security@stayinko.com</a>.</p>
+          <p>
+            All data in transit is encrypted via HTTPS/TLS. Data at rest is protected by our infrastructure
+            provider's disk-level encryption, and database access is restricted using Row Level Security (RLS)
+            policies scoped to each user's own records. Sensitive payout details (bank account number, account
+            holder, business registration number) are currently stored using these same infrastructure-level
+            protections; dedicated field-level encryption for this data is in development and not yet active.
+            No system is 100% secure; report concerns to <a className="text-primary underline" href="mailto:security@stayinko.com">security@stayinko.com</a>.
+          </p>
         </div>
         <div>
           <h2 className="text-xl font-semibold">7. International Transfers</h2>
