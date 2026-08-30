@@ -60,7 +60,7 @@ const HeroSection = () => {
                 <input
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  placeholder="Location, university or keyword..."
+                  placeholder='e.g. "I need a room near Hanyang University"'
                   className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
                 />
               </div>
