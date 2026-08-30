@@ -7,6 +7,8 @@ import ListingCard from "@/components/ListingCard";
 import { Button } from "@/components/ui/button";
 import { useListings } from "@/hooks/useListings";
 import EmptyState from "@/components/ui/empty-state";
+import ServiceMatchSection from "@/components/ServiceMatchSection";
+
 
 const cities = ["All", "Seoul", "Busan", "Daejeon", "Gwangju"];
 const propertyTypes = [
@@ -182,7 +184,13 @@ const SearchPage = () => {
             ))}
           </div>
         )}
+
+        <ServiceMatchSection
+          className="mt-14"
+          searchContext={[keyword, university, city !== "All" ? city : ""].filter(Boolean).join(" ")}
+        />
       </main>
+
 
       <Footer />
     </div>
