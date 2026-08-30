@@ -1,4 +1,4 @@
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogIn, UserPlus, Sparkles, CircleUserRound } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -69,13 +69,48 @@ const Navbar = () => {
           )}
         </div>
 
-        <button
-          className="rounded-lg p-2 transition-base hover:bg-secondary md:hidden"
-          onClick={() => setMobileOpen((value) => !value)}
-          aria-label="Toggle menu"
-        >
-          {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
+        <div className="flex items-center gap-1 md:hidden">
+          <Link
+            to="/concierge"
+            className="rounded-lg p-2 text-primary transition-base hover:bg-secondary"
+            aria-label="Concierge"
+          >
+            <Sparkles className="h-5 w-5" />
+          </Link>
+          {user ? (
+            <Link
+              to="/mypage"
+              className="rounded-lg p-2 text-foreground/80 transition-base hover:bg-secondary"
+              aria-label="My Page"
+            >
+              <CircleUserRound className="h-5 w-5" />
+            </Link>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="rounded-lg p-2 text-foreground/80 transition-base hover:bg-secondary"
+                aria-label="Log In"
+              >
+                <LogIn className="h-5 w-5" />
+              </Link>
+              <Link
+                to="/signup"
+                className="rounded-lg bg-primary p-2 text-primary-foreground transition-base hover:opacity-90"
+                aria-label="Sign Up"
+              >
+                <UserPlus className="h-5 w-5" />
+              </Link>
+            </>
+          )}
+          <button
+            className="rounded-lg p-2 transition-base hover:bg-secondary"
+            onClick={() => setMobileOpen((value) => !value)}
+            aria-label="Toggle menu"
+          >
+            {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </div>
       </div>
 
       {mobileOpen ? (
