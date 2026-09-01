@@ -153,12 +153,50 @@ export type Database = {
           },
         ]
       }
+      help_request_messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          request_id: string
+          sender_id: string | null
+          sender_role: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          request_id: string
+          sender_id?: string | null
+          sender_role: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          request_id?: string
+          sender_id?: string | null
+          sender_role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "help_request_messages_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "help_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       help_requests: {
         Row: {
           area: string
           created_at: string
           details: string | null
+          estimated_rate: number | null
           helper_id: string | null
+          helper_name: string | null
+          helper_ref: string | null
           id: string
           metadata: Json | null
           service: string
@@ -171,7 +209,10 @@ export type Database = {
           area: string
           created_at?: string
           details?: string | null
+          estimated_rate?: number | null
           helper_id?: string | null
+          helper_name?: string | null
+          helper_ref?: string | null
           id?: string
           metadata?: Json | null
           service: string
@@ -184,7 +225,10 @@ export type Database = {
           area?: string
           created_at?: string
           details?: string | null
+          estimated_rate?: number | null
           helper_id?: string | null
+          helper_name?: string | null
+          helper_ref?: string | null
           id?: string
           metadata?: Json | null
           service?: string
@@ -192,6 +236,80 @@ export type Database = {
           updated_at?: string
           urgent?: boolean
           user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "help_requests_helper_ref_fkey"
+            columns: ["helper_ref"]
+            isOneToOne: false
+            referencedRelation: "helpers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      helpers: {
+        Row: {
+          active: boolean
+          avatar_url: string | null
+          background_checked: boolean
+          bio: string | null
+          city: string
+          created_at: string
+          district: string
+          hourly_rate: number
+          id: string
+          id_verified: boolean
+          jobs_done: number
+          languages: string[]
+          name: string
+          rating: number
+          response_min: number
+          reviews_count: number
+          services: string[]
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          avatar_url?: string | null
+          background_checked?: boolean
+          bio?: string | null
+          city: string
+          created_at?: string
+          district: string
+          hourly_rate?: number
+          id?: string
+          id_verified?: boolean
+          jobs_done?: number
+          languages?: string[]
+          name: string
+          rating?: number
+          response_min?: number
+          reviews_count?: number
+          services?: string[]
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          avatar_url?: string | null
+          background_checked?: boolean
+          bio?: string | null
+          city?: string
+          created_at?: string
+          district?: string
+          hourly_rate?: number
+          id?: string
+          id_verified?: boolean
+          jobs_done?: number
+          languages?: string[]
+          name?: string
+          rating?: number
+          response_min?: number
+          reviews_count?: number
+          services?: string[]
+          slug?: string
+          updated_at?: string
         }
         Relationships: []
       }

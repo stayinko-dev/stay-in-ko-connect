@@ -10,6 +10,7 @@ import {
   Coffee,
   type LucideIcon,
 } from "lucide-react";
+import type { DbHelper } from "@/hooks/useHelpers";
 
 export type HelpService = {
   id: string;
@@ -32,39 +33,6 @@ export const HELP_SERVICES: HelpService[] = [
   { id: "life", name: "Local Life", description: "Errands, shopping, settling in", icon: Coffee, accent: "text-orange-500" },
 ];
 
-export type MatchHelper = {
-  id: string;
-  name: string;
-  avatar: string;
-  district: string; // e.g. "Seongdong-gu"
-  city: string;
-  languages: string[]; // e.g. ["English", "Korean"]
-  services: string[]; // HelpService ids
-  rating: number;
-  reviews: number;
-  jobsDone: number;
-  idVerified: boolean;
-  backgroundChecked: boolean;
-  hourlyRate: number; // KRW
-  responseMin: number;
-  bio: string;
-};
-
-const face = (seed: string) => `https://i.pravatar.cc/240?u=${seed}`;
-
-export const HELPER_POOL: MatchHelper[] = [
-  { id: "m1", name: "Jiwoo Park", avatar: face("jiwoo"), district: "Seongdong-gu", city: "Seoul", languages: ["English", "Korean", "Japanese"], services: ["hospital", "gov", "translation"], rating: 4.9, reviews: 128, jobsDone: 164, idVerified: true, backgroundChecked: true, hourlyRate: 25000, responseMin: 8, bio: "Hanyang Univ. grad. I handle hospital visits and ARC paperwork weekly." },
-  { id: "m2", name: "Minho Lee", avatar: face("minho"), district: "Seongdong-gu", city: "Seoul", languages: ["English", "Korean", "Chinese"], services: ["moving", "contract", "transport"], rating: 4.8, reviews: 84, jobsDone: 97, idVerified: true, backgroundChecked: true, hourlyRate: 30000, responseMin: 12, bio: "Move-in specialist around Wangsimni & Seongsu. Lease checks included." },
-  { id: "m3", name: "Soyeon Kim", avatar: face("soyeon"), district: "Seongdong-gu", city: "Seoul", languages: ["English", "Korean"], services: ["sim", "bank", "life"], rating: 5.0, reviews: 56, jobsDone: 61, idVerified: true, backgroundChecked: false, hourlyRate: 22000, responseMin: 6, bio: "SIM + bank account in one afternoon. I know which branches speak English." },
-  { id: "m4", name: "Daniel Cho", avatar: face("daniel"), district: "Jongno-gu", city: "Seoul", languages: ["English", "Korean"], services: ["contract", "translation", "gov"], rating: 4.7, reviews: 41, jobsDone: 52, idVerified: true, backgroundChecked: true, hourlyRate: 35000, responseMin: 15, bio: "Business interpreter, contract and immigration documents." },
-  { id: "m5", name: "Yuna Han", avatar: face("yuna"), district: "Seodaemun-gu", city: "Seoul", languages: ["English", "Korean", "Japanese"], services: ["life", "moving", "sim"], rating: 4.9, reviews: 73, jobsDone: 88, idVerified: true, backgroundChecked: true, hourlyRate: 24000, responseMin: 9, bio: "Student-life helper near Yonsei & Ewha. Settling-in checklists." },
-  { id: "m6", name: "Hyunwoo Seo", avatar: face("hyunwoo"), district: "Gwangjin-gu", city: "Seoul", languages: ["English", "Korean"], services: ["hospital", "bank", "transport"], rating: 4.8, reviews: 38, jobsDone: 44, idVerified: true, backgroundChecked: false, hourlyRate: 20000, responseMin: 11, bio: "Konkuk area. Clinic appointments and bank visits after 6pm too." },
-  { id: "m7", name: "Eunji Nam", avatar: face("eunji"), district: "Gangnam-gu", city: "Seoul", languages: ["English", "Korean", "Chinese"], services: ["bank", "gov", "contract"], rating: 4.9, reviews: 152, jobsDone: 190, idVerified: true, backgroundChecked: true, hourlyRate: 33000, responseMin: 7, bio: "Ex-bank teller. Accounts, cards, and rental contracts." },
-  { id: "m8", name: "Taeyang Ryu", avatar: face("taeyang"), district: "Mapo-gu", city: "Seoul", languages: ["English", "Korean"], services: ["sim", "transport", "life"], rating: 4.6, reviews: 29, jobsDone: 33, idVerified: true, backgroundChecked: false, hourlyRate: 19000, responseMin: 14, bio: "Hongdae local. Phone plans, T-money, and neighborhood tours." },
-  { id: "m9", name: "Hana Jung", avatar: face("hana"), district: "Dongdaemun-gu", city: "Seoul", languages: ["English", "Korean"], services: ["hospital", "translation", "moving"], rating: 4.8, reviews: 64, jobsDone: 79, idVerified: true, backgroundChecked: true, hourlyRate: 26000, responseMin: 10, bio: "Medical interpreting at university hospitals in eastern Seoul." },
-  { id: "m10", name: "Jaewon Oh", avatar: face("jaewon"), district: "Haeundae-gu", city: "Busan", languages: ["English", "Korean"], services: ["life", "transport", "sim"], rating: 4.7, reviews: 47, jobsDone: 55, idVerified: true, backgroundChecked: true, hourlyRate: 21000, responseMin: 13, bio: "Busan settling-in help, from SIM cards to beach-side apartments." },
-];
-
 /** Landmark / university / station keyword → district */
 const AREA_HINTS: { match: string[]; district: string; city: string }[] = [
   { match: ["hanyang", "한양", "wangsimni", "왕십리", "seongsu", "성수", "seongdong", "성동"], district: "Seongdong-gu", city: "Seoul" },
@@ -74,6 +42,8 @@ const AREA_HINTS: { match: string[]; district: string; city: string }[] = [
   { match: ["gangnam", "강남", "yeoksam", "역삼", "seolleung", "선릉"], district: "Gangnam-gu", city: "Seoul" },
   { match: ["korea university", "고려대", "hankuk", "외대", "dongdaemun", "동대문", "hoegi", "회기"], district: "Dongdaemun-gu", city: "Seoul" },
   { match: ["snu", "서울대", "jongno", "종로", "gwanghwamun", "광화문", "sungkyunkwan", "성균관"], district: "Jongno-gu", city: "Seoul" },
+  { match: ["kaist", "카이스트", "chungnam", "충남대", "yuseong", "유성", "daejeon", "대전"], district: "Yuseong-gu", city: "Daejeon" },
+  { match: ["chonnam", "전남대", "gwangju", "광주", "buk-gu", "북구"], district: "Buk-gu", city: "Gwangju" },
   { match: ["busan", "부산", "haeundae", "해운대", "seomyeon", "서면"], district: "Haeundae-gu", city: "Busan" },
 ];
 
@@ -88,16 +58,17 @@ export const inferArea = (input: string): AreaGuess => {
   return null;
 };
 
-export type ScoredHelper = MatchHelper & { score: number; reasons: string[] };
+export type ScoredHelper = DbHelper & { score: number; reasons: string[] };
 
 /** Score = service fit + area proximity + language + rating + verification + price value */
 export const matchHelpers = (
+  pool: DbHelper[],
   serviceId: string,
   area: AreaGuess,
   language = "English",
   limit = 3,
 ): ScoredHelper[] => {
-  const scored = HELPER_POOL.map((h) => {
+  const scored = pool.map((h) => {
     let score = 0;
     const reasons: string[] = [];
 
@@ -116,28 +87,27 @@ export const matchHelpers = (
       score += 15;
       reasons.push(`${language} speaking`);
     }
-    score += (h.rating - 4) * 12;
-    if (h.rating >= 4.8) reasons.push(`${h.rating} rating · ${h.reviews} reviews`);
-    if (h.idVerified) {
+    score += (Number(h.rating) - 4) * 12;
+    if (Number(h.rating) >= 4.8) reasons.push(`${h.rating} rating · ${h.reviews_count} reviews`);
+    if (h.id_verified) {
       score += 6;
       reasons.push("ID verified");
     }
-    if (h.backgroundChecked) {
+    if (h.background_checked) {
       score += 5;
       reasons.push("Background checked");
     }
-    score += Math.max(0, (35000 - h.hourlyRate) / 2000);
+    score += Math.max(0, (35000 - h.hourly_rate) / 2000);
 
     return { ...h, score, reasons: reasons.slice(0, 4) };
   });
 
-  return scored
+  const specialists = scored
     .filter((h) => h.services.includes(serviceId))
-    .sort((a, b) => b.score - a.score)
-    .slice(0, limit)
-    .concat(
-      // fallback if fewer than `limit` specialists exist
-      scored.filter((h) => !h.services.includes(serviceId)).sort((a, b) => b.score - a.score),
-    )
-    .slice(0, limit);
+    .sort((a, b) => b.score - a.score);
+  const rest = scored
+    .filter((h) => !h.services.includes(serviceId))
+    .sort((a, b) => b.score - a.score);
+
+  return [...specialists, ...rest].slice(0, limit);
 };
