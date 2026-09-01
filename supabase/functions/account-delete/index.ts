@@ -6,6 +6,11 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
+interface RequestDeletionResult {
+  scheduled_purge_at?: string;
+  display_name?: string;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
@@ -51,7 +56,8 @@ Deno.serve(async (req) => {
     if (error) throw error;
 
     // Best-effort: enqueue confirmation email if email infra exists.
-    const purgeAt = (data as any)?.scheduled_purge_at;
+    const result = data as RequestDeletionResult | null;
+    const purgeAt = result?.scheduled_purge_at;
     const purgeDateStr = purgeAt ? new Date(purgeAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : "30 days from now";
 
     try {
@@ -62,7 +68,7 @@ Deno.serve(async (req) => {
         html_body: `
           <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#1a1a1a">
             <h1 style="font-size:22px;margin:0 0 12px">Account deletion confirmed</h1>
-            <p>Hi${(data as any)?.display_name ? ` ${(data as any).display_name}` : ""},</p>
+            <p>Hi${result?.display_name ? ` ${result.display_name}` : ""},</p>
             <p>We've received your request to delete your StayInKo account.</p>
             <ul>
               <li>Your profile is now hidden from other users.</li>
@@ -79,7 +85,11 @@ Deno.serve(async (req) => {
     }
 
     // Sign the user out server-side (revoke refresh tokens)
-    try { await adminClient.auth.admin.signOut(user.id); } catch (_) {}
+    try {
+      await adminClient.auth.admin.signOut(user.id);
+    } catch (signOutErr) {
+      console.warn("Server-side sign-out skipped:", (signOutErr as Error).message);
+    }
 
     return new Response(JSON.stringify({ ok: true, scheduled_purge_at: purgeAt }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
