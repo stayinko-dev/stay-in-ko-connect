@@ -1,4 +1,4 @@
-import { Menu, X, LogIn, UserPlus, Sparkles, CircleUserRound } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import logoImg from "@/assets/logo.jpg";
+import MobileNav from "@/components/MobileNav";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -26,10 +27,11 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl">
-      <div className="container mx-auto flex items-center justify-between px-4 py-3 lg:px-8">
+    <>
+    <nav className="sticky top-0 z-50 border-b border-border/60 bg-background/90 backdrop-blur-xl">
+      <div className="container mx-auto flex h-16 items-center justify-between px-4 md:h-auto md:py-3 lg:px-8">
         <Link to="/" className="flex items-center">
-          <img src={logoImg} alt="StayInKo" className="h-14" />
+          <img src={logoImg} alt="StayInKo" className="h-11 w-auto md:h-14" />
         </Link>
 
         <div className="hidden items-center gap-1 text-sm font-medium md:flex">
@@ -69,60 +71,22 @@ const Navbar = () => {
           )}
         </div>
 
-        <div className="flex items-center gap-1 md:hidden">
-          <Link
-            to="/concierge"
-            className="rounded-lg p-2 text-primary transition-base hover:bg-secondary"
-            aria-label="Concierge"
-          >
-            <Sparkles className="h-5 w-5" />
-          </Link>
-          {user ? (
-            <Link
-              to="/mypage"
-              className="rounded-lg p-2 text-foreground/80 transition-base hover:bg-secondary"
-              aria-label="My Page"
-            >
-              <CircleUserRound className="h-5 w-5" />
-            </Link>
-          ) : (
-            <>
-              <Link
-                to="/login"
-                className="rounded-lg p-2 text-foreground/80 transition-base hover:bg-secondary"
-                aria-label="Log In"
-              >
-                <LogIn className="h-5 w-5" />
-              </Link>
-              <Link
-                to="/signup"
-                className="rounded-lg bg-primary p-2 text-primary-foreground transition-base hover:opacity-90"
-                aria-label="Sign Up"
-              >
-                <UserPlus className="h-5 w-5" />
-              </Link>
-            </>
-          )}
-          <button
-            className="rounded-lg p-2 transition-base hover:bg-secondary"
+        <div className="flex items-center md:hidden">
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => setMobileOpen((value) => !value)}
             aria-label="Toggle menu"
           >
-            {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
+            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
         </div>
       </div>
 
       {mobileOpen ? (
-        <div className="space-y-1 border-b border-border bg-card px-4 pb-4 md:hidden">
-          <Link to="/search" className="block rounded-lg px-3 py-2.5 text-sm font-medium text-foreground/80 hover:bg-secondary" onClick={() => setMobileOpen(false)}>
-            Find a Place
-          </Link>
-          <Link to="/concierge" className="block rounded-lg px-3 py-2.5 text-sm font-medium text-foreground/80 hover:bg-secondary" onClick={() => setMobileOpen(false)}>
-            Concierge
-          </Link>
+        <div className="space-y-1 border-b border-border bg-card px-4 pb-4 shadow-elevated md:hidden">
           <Link to="/host" className="block rounded-lg px-3 py-2.5 text-sm font-medium text-foreground/80 hover:bg-secondary" onClick={() => setMobileOpen(false)}>
-            Host Dashboard
+            List your home
           </Link>
           <Link to="/mypage" className="block rounded-lg px-3 py-2.5 text-sm font-medium text-foreground/80 hover:bg-secondary" onClick={() => setMobileOpen(false)}>
             My Page
@@ -152,6 +116,8 @@ const Navbar = () => {
         </div>
       ) : null}
     </nav>
+    <MobileNav />
+    </>
   );
 };
 
