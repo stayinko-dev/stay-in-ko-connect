@@ -8,12 +8,12 @@ const FeaturedHomes = () => {
   const featured = listings.slice(0, 3);
 
   return (
-    <section className="py-16 md:py-24 bg-background">
+    <section className="bg-background py-12 md:py-24">
       <div className="container mx-auto px-4 lg:px-8">
-        <div className="flex items-end justify-between mb-10">
+        <div className="mb-6 flex items-end justify-between md:mb-10">
           <div>
-            <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground">Featured Homes</h2>
-            <p className="text-muted-foreground mt-2 font-body">Handpicked properties with verified hosts.</p>
+            <h2 className="text-2xl font-display font-bold text-foreground md:text-4xl">Featured Homes</h2>
+            <p className="mt-1 text-sm text-muted-foreground md:mt-2 md:text-base">Handpicked stays with verified hosts.</p>
           </div>
           <Link to="/search" className="hidden md:flex items-center gap-1 text-sm font-semibold text-foreground hover:text-primary transition-colors">
             View all <ArrowRight className="h-4 w-4" />
@@ -25,14 +25,14 @@ const FeaturedHomes = () => {
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
             {featured.map((listing) => (
               <ListingCard key={listing.id} listing={listing} />
             ))}
           </div>
         )}
 
-        <Link to="/search" className="md:hidden flex items-center justify-center gap-1 text-sm font-semibold text-foreground hover:text-primary mt-8">
+        <Link to="/search" className="mt-6 flex min-h-11 items-center justify-center gap-1 rounded-lg border border-border text-sm font-semibold text-foreground hover:text-primary md:hidden">
           View all properties <ArrowRight className="h-4 w-4" />
         </Link>
       </div>

@@ -33,29 +33,25 @@ const HeroSection = () => {
 
   return (
     <section className="relative overflow-hidden bg-gradient-hero">
-      {/* Decorative orbs */}
-      <div className="pointer-events-none absolute -top-40 -right-32 h-[480px] w-[480px] rounded-full bg-primary/20 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-40 -left-32 h-[420px] w-[420px] rounded-full bg-primary-glow/20 blur-3xl" />
-
-      <div className="relative container mx-auto px-4 lg:px-8 pt-20 pb-24 md:pt-28 md:pb-32 lg:pt-32 lg:pb-40">
+      <div className="relative container mx-auto px-4 pb-12 pt-10 md:pb-32 md:pt-28 lg:px-8 lg:pb-40 lg:pt-32">
         <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
           {/* Left: Copy */}
           <div className="max-w-2xl">
-            <Badge variant="soft" className="mb-6 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em]">
+            <Badge variant="soft" className="mb-5 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-normal md:mb-6 md:text-[11px]">
               For international students & professionals
             </Badge>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold leading-[1.05] text-foreground text-balance">
+            <h1 className="text-4xl font-display font-bold leading-[1.08] text-foreground text-balance md:text-5xl lg:text-6xl">
               The easiest way to{" "}
               <span className="bg-gradient-primary bg-clip-text text-transparent">land in Korea.</span>
             </h1>
 
-            <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-xl text-pretty leading-relaxed">
+            <p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground text-pretty md:mt-6 md:text-xl">
               Search verified stays, message hosts in English, and book without massive deposits — all in one place.
             </p>
 
-            <form onSubmit={submitSearch} className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-              <div className="flex flex-1 items-center gap-2 rounded-xl border border-border bg-card px-4 py-3 shadow-soft">
+            <form onSubmit={submitSearch} className="mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:items-center">
+              <div className="flex min-h-12 flex-1 items-center gap-2 rounded-xl border border-border bg-card px-4 py-3 shadow-soft">
                 <MapPin className="h-5 w-5 shrink-0 text-primary" />
                 <input
                   value={location}
@@ -70,19 +66,19 @@ const HeroSection = () => {
               </Button>
             </form>
 
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="scrollbar-hide -mx-4 mt-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
               {quickFilters.map((q) => (
                 <Link
                   key={q.label}
                   to={q.to}
-                  className="rounded-full border border-border bg-card/70 px-3.5 py-1.5 text-xs font-medium text-foreground/80 backdrop-blur transition-base hover:border-primary hover:text-primary"
+                  className="shrink-0 rounded-full border border-border bg-card/70 px-3.5 py-2 text-xs font-medium text-foreground/80 backdrop-blur transition-base hover:border-primary hover:text-primary"
                 >
                   {q.label}
                 </Link>
               ))}
             </div>
 
-            <div className="mt-6">
+            <div className="mt-5 md:mt-6">
               <Button asChild size="lg" variant="outline">
                 <Link to="/host/properties/new">
                   List your home
@@ -91,7 +87,7 @@ const HeroSection = () => {
               </Button>
             </div>
 
-            <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3 md:mt-8">
               {trustChips.map((chip) => (
                 <div key={chip.label} className="flex items-center gap-2 text-sm text-muted-foreground">
                   <chip.icon className="h-4 w-4 text-primary" />
@@ -101,15 +97,15 @@ const HeroSection = () => {
             </div>
 
             {/* Stats */}
-            <div className="mt-10 grid grid-cols-3 gap-6 max-w-lg">
+            <div className="mt-8 grid max-w-lg grid-cols-3 gap-3 border-t border-border/70 pt-6 md:mt-10 md:gap-6">
               {[
                 { value: "5,000+", label: "Tenants moved in" },
                 { value: "1,200+", label: "Verified listings" },
                 { value: "98%", label: "Satisfaction" },
               ].map((s) => (
                 <div key={s.label}>
-                  <div className="text-2xl md:text-3xl font-display font-bold text-foreground">{s.value}</div>
-                  <p className="text-xs md:text-sm text-muted-foreground mt-1">{s.label}</p>
+                  <div className="text-xl font-display font-bold text-foreground md:text-3xl">{s.value}</div>
+                  <p className="mt-1 text-[11px] leading-4 text-muted-foreground md:text-sm">{s.label}</p>
                 </div>
               ))}
             </div>
