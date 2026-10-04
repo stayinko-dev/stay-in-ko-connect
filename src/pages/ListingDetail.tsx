@@ -397,7 +397,7 @@ const ListingDetail = () => {
 
             <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
               <span className="flex items-center gap-1 font-semibold">
-                <Star className="h-4 w-4 fill-star text-star" /> {Number(listing.rating).toFixed(1)}
+                <Star className="h-4 w-4 fill-star text-star" /> {Number(listing.rating).toFixed(1)} <span className="text-muted-foreground font-normal">({listing.reviews_count} reviews)</span>
               </span>
               <span className="text-muted-foreground">·</span>
               <span className="flex items-center gap-1 text-muted-foreground">
