@@ -247,6 +247,51 @@ export type Database = {
           },
         ]
       }
+      helper_reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          helper_id: string
+          id: string
+          rating: number
+          request_id: string
+          user_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          helper_id: string
+          id?: string
+          rating: number
+          request_id: string
+          user_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          helper_id?: string
+          id?: string
+          rating?: number
+          request_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "helper_reviews_helper_id_fkey"
+            columns: ["helper_id"]
+            isOneToOne: false
+            referencedRelation: "helpers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "helper_reviews_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: true
+            referencedRelation: "help_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       helpers: {
         Row: {
           active: boolean
@@ -344,6 +389,7 @@ export type Database = {
           price: number
           price_display: string | null
           rating: number | null
+          reviews_count: number
           status: string | null
           tag_colors: boolean[] | null
           tags: string[] | null
@@ -383,6 +429,7 @@ export type Database = {
           price?: number
           price_display?: string | null
           rating?: number | null
+          reviews_count?: number
           status?: string | null
           tag_colors?: boolean[] | null
           tags?: string[] | null
@@ -422,6 +469,7 @@ export type Database = {
           price?: number
           price_display?: string | null
           rating?: number | null
+          reviews_count?: number
           status?: string | null
           tag_colors?: boolean[] | null
           tags?: string[] | null
@@ -521,6 +569,7 @@ export type Database = {
       }
       reviews: {
         Row: {
+          booking_id: string | null
           comment: string | null
           created_at: string
           host_id: string
@@ -532,6 +581,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          booking_id?: string | null
           comment?: string | null
           created_at?: string
           host_id: string
@@ -543,6 +593,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          booking_id?: string | null
           comment?: string | null
           created_at?: string
           host_id?: string
@@ -554,6 +605,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "reviews_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "reviews_listing_id_fkey"
             columns: ["listing_id"]
