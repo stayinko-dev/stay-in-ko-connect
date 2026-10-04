@@ -75,6 +75,10 @@ const SearchPage = () => {
       const range = priceRanges[priceIdx];
       if (l.price < range.min || l.price > range.max) return false;
       return true;
+    }).sort((a, b) => {
+      // Rank by rating, weighted by number of guest reviews
+      const s = (l: typeof a) => Number(l.rating || 0) + Math.min(l.reviews_count || 0, 20) * 0.02;
+      return s(b) - s(a);
     });
   }, [listings, keyword, city, propertyType, stayType, noDeposit, university, priceIdx]);
 
