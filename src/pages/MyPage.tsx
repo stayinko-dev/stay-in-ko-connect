@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import DeleteAccountDialog from "@/components/DeleteAccountDialog";
+import ReviewCenter from "@/components/ReviewCenter";
 
 type ProfileForm = {
   display_name: string;
@@ -202,6 +203,8 @@ const MyPage = () => {
                 </CardContent>
               </Card>
             </section>
+
+            {user && <ReviewCenter userId={user.id} />}
           </div>
         )}
       </main>

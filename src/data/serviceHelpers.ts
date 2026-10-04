@@ -87,8 +87,10 @@ export const matchHelpers = (
       score += 15;
       reasons.push(`${language} speaking`);
     }
-    score += (Number(h.rating) - 4) * 12;
-    if (Number(h.rating) >= 4.8) reasons.push(`${h.rating} rating · ${h.reviews_count} reviews`);
+    // Rating weighted by review confidence (more reviews = more trust)
+    const confidence = Math.min(1, h.reviews_count / 20);
+    score += (Number(h.rating) - 4) * 20 * (0.5 + 0.5 * confidence);
+    if (Number(h.rating) >= 4.5) reasons.push(`${Number(h.rating).toFixed(1)} rating · ${h.reviews_count} reviews`);
     if (h.id_verified) {
       score += 6;
       reasons.push("ID verified");
