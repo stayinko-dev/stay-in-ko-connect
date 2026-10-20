@@ -21,6 +21,7 @@ import Terms from "./pages/Terms.tsx";
 import Privacy from "./pages/Privacy.tsx";
 
 const Concierge = lazy(() => import("./pages/Concierge.tsx"));
+const Community = lazy(() => import("./pages/Community.tsx"));
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,7 @@ const App = () => (
             <Route path="/search" element={<Search />} />
             <Route path="/properties/:id" element={<ListingDetail />} />
             <Route path="/concierge" element={<Concierge />} />
+            <Route path="/community" element={<Community />} />
             <Route
               path="/host/properties/new"
               element={
