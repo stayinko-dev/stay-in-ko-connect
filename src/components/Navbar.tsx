@@ -41,6 +41,9 @@ const Navbar = () => {
           <Link to="/concierge" className="rounded-lg px-3 py-2 text-foreground/75 transition-base hover:bg-secondary hover:text-foreground">
             Concierge
           </Link>
+          <Link to="/community" className="rounded-lg px-3 py-2 text-foreground/75 transition-base hover:bg-secondary hover:text-foreground">
+            Community
+          </Link>
           <Link to="/host" className="rounded-lg px-3 py-2 text-foreground/75 transition-base hover:bg-secondary hover:text-foreground">
             Host Dashboard
           </Link>
