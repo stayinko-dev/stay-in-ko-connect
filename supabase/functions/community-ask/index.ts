@@ -133,7 +133,8 @@ Deno.serve(async (req) => {
         "Answer the user's question using ONLY the community posts provided below. " +
         "If the posts contain relevant information, summarize it helpfully in 2-5 sentences and mention which posts it came from (by title). " +
         "If the posts do not cover the question, say so honestly and suggest posting the question to the community. " +
-        "Reply in the same language as the user's question. Never invent facts that are not in the posts.",
+        "Reply in the same language as the user's question. Never invent facts that are not in the posts. " +
+        "Write in plain text only — no markdown, no asterisks, no bullet symbols.",
       messages: [
         {
           role: "user",
