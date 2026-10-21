@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { HandHelping, LifeBuoy, Loader2, MessageCircle, MessagesSquare, Lightbulb, Star, Trash2, HelpCircle } from "lucide-react";
+import { HandHelping, LifeBuoy, Loader2, MessageCircle, MessagesSquare, Lightbulb, Sparkles, Star, Trash2, HelpCircle } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -98,6 +98,8 @@ const Community = () => {
           )}
         </div>
 
+        <AskAI onOpenPost={setOpenId} />
+
         <div className="-mx-4 mb-6 flex gap-2 overflow-x-auto px-4 pb-1 no-scrollbar">
           {[{ id: "all", label: "All", icon: MessagesSquare }, ...CATEGORIES].map((c) => (
             <button key={c.id} onClick={() => setFilter(c.id)}
@@ -171,6 +173,85 @@ const Community = () => {
       </main>
       <Footer />
     </div>
+  );
+};
+
+type AiSource = { id: string; title: string; category: string };
+
+const AskAI = ({ onOpenPost }: { onOpenPost: (id: string) => void }) => {
+  const { user } = useAuth();
+  const [question, setQuestion] = useState("");
+  const [asking, setAsking] = useState(false);
+  const [answer, setAnswer] = useState<string | null>(null);
+  const [sources, setSources] = useState<AiSource[]>([]);
+
+  const ask = async () => {
+    const q = question.trim();
+    if (q.length < 4) { toast.error("Please enter a question."); return; }
+    setAsking(true);
+    setAnswer(null);
+    setSources([]);
+    const { data, error } = await supabase.functions.invoke("community-ask", { body: { question: q } });
+    setAsking(false);
+    if (error) { toast.error(error.message); return; }
+    if (data?.error) { toast.error(data.error); return; }
+    setAnswer(data.answer);
+    setSources((data.sources ?? []) as AiSource[]);
+  };
+
+  return (
+    <Card className="mb-6 border-primary/30 bg-primary-soft/40">
+      <CardContent className="space-y-3 p-5">
+        <div className="flex items-center gap-2">
+          <Sparkles className="h-5 w-5 text-primary" />
+          <h2 className="text-lg font-semibold">Ask the community AI</h2>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Ask anything about life in Korea — the AI finds answers from existing community posts.
+        </p>
+        {user ? (
+          <div className="flex gap-2">
+            <Input
+              placeholder="e.g. How do I open a bank account in Seoul?"
+              maxLength={500}
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && !asking && ask()}
+            />
+            <Button onClick={ask} disabled={asking || question.trim().length < 4}>
+              {asking ? <Loader2 className="h-4 w-4 animate-spin" /> : "Ask"}
+            </Button>
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            <Link to="/login" className="text-primary underline">Log in</Link> to ask the AI.
+          </p>
+        )}
+        {asking && (
+          <p className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" />Searching community posts…
+          </p>
+        )}
+        {answer && (
+          <div className="rounded-xl border border-border bg-card p-4">
+            <p className="whitespace-pre-line text-sm">{answer}</p>
+            {sources.length > 0 && (
+              <div className="mt-3 border-t border-border pt-3">
+                <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Based on these posts</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {sources.map((s) => (
+                    <button key={s.id} onClick={() => onOpenPost(s.id)}
+                      className="rounded-full border border-border bg-secondary px-3 py-1 text-xs font-medium hover:bg-secondary/70">
+                      {s.title}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 
