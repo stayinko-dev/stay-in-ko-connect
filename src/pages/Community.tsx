@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { HandHelping, LifeBuoy, Loader2, MessageCircle, MessagesSquare, Lightbulb, Star, Trash2, HelpCircle } from "lucide-react";
+import { HandHelping, LifeBuoy, Loader2, MessageCircle, MessagesSquare, Lightbulb, Sparkles, Star, Trash2, HelpCircle } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -97,6 +97,8 @@ const Community = () => {
             <Button asChild variant="outline"><Link to="/login">Log in to post</Link></Button>
           )}
         </div>
+
+        <AskAI onOpenPost={setOpenId} />
 
         <div className="-mx-4 mb-6 flex gap-2 overflow-x-auto px-4 pb-1 no-scrollbar">
           {[{ id: "all", label: "All", icon: MessagesSquare }, ...CATEGORIES].map((c) => (
