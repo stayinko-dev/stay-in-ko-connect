@@ -1,17 +1,20 @@
 import { useState } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { oauthReturnPath } from "@/lib/oauth-return-path";
 import { toast } from "sonner";
 import logoImg from "@/assets/logo.jpg";
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user, loading } = useAuth();
+  const next = oauthReturnPath(searchParams.get("next"));
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
@@ -39,7 +42,10 @@ const SignUp = () => {
       email: form.email,
       password: form.password,
       options: {
-        emailRedirectTo: `${window.location.origin}/login`,
+        emailRedirectTo: new URL(
+          next !== "/" ? `/login?next=${encodeURIComponent(next)}` : "/login",
+          window.location.origin,
+        ).href,
         data: {
           display_name: form.name,
         },
@@ -54,7 +60,7 @@ const SignUp = () => {
     }
 
     toast.success("Account created. Please verify your email before signing in.");
-    navigate("/login", { replace: true });
+    navigate(next !== "/" ? `/login?next=${encodeURIComponent(next)}` : "/login", { replace: true });
   };
 
   return (
@@ -141,7 +147,7 @@ const SignUp = () => {
 
           <p className="text-center text-sm text-muted-foreground">
             Already have an account?{" "}
-            <Link to="/login" className="font-medium text-primary hover:underline">
+            <Link to={next !== "/" ? `/login?next=${encodeURIComponent(next)}` : "/login"} className="font-medium text-primary hover:underline">
               Go to login
             </Link>
           </p>

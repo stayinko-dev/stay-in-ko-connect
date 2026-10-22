@@ -1,24 +1,27 @@
 import { useState } from "react";
-import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { oauthReturnPath } from "@/lib/oauth-return-path";
 import { toast } from "sonner";
 import logoImg from "@/assets/logo.jpg";
 
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const { user, loading } = useAuth();
+  const next = oauthReturnPath(searchParams.get("next"));
+  const redirectTo = (location.state as { from?: string } | null)?.from || (next !== "/" ? next : "/mypage");
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
 
   if (!loading && user) {
-    const redirectTo = (location.state as { from?: string } | null)?.from || "/mypage";
     return <Navigate to={redirectTo} replace />;
   }
 
@@ -39,7 +42,7 @@ const Login = () => {
     }
 
     toast.success("Logged in successfully.");
-    navigate((location.state as { from?: string } | null)?.from || "/mypage", { replace: true });
+    navigate(redirectTo, { replace: true });
   };
 
   return (
@@ -107,7 +110,7 @@ const Login = () => {
 
           <p className="text-center text-sm text-muted-foreground">
             Need an account?{" "}
-            <Link to="/signup" className="font-medium text-primary hover:underline">
+            <Link to={next !== "/" ? `/signup?next=${encodeURIComponent(next)}` : "/signup"} className="font-medium text-primary hover:underline">
               Start for free
             </Link>
           </p>

@@ -19,6 +19,7 @@ import ListingDetail from "./pages/ListingDetail.tsx";
 import HostListingNew from "./pages/HostListingNew.tsx";
 import Terms from "./pages/Terms.tsx";
 import Privacy from "./pages/Privacy.tsx";
+import OAuthConsent from "./pages/OAuthConsent.tsx";
 
 const Concierge = lazy(() => import("./pages/Concierge.tsx"));
 const Community = lazy(() => import("./pages/Community.tsx"));
@@ -61,6 +62,7 @@ const App = () => (
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
+            <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
             <Route
               path="/mypage"
               element={
