@@ -79,7 +79,7 @@ export default defineTool({
     if (args.city) query = query.ilike("city", args.city);
     if (args.property_type) query = query.eq("type", args.property_type);
     if (args.max_price) query = query.lte("price", args.max_price);
-    if (args.no_deposit_only) query = eq("no_deposit", true);
+    if (args.no_deposit_only) query = query.eq("no_deposit", true);
     if (args.university) query = query.ilike("university_area", `%${args.university}%`);
     if (args.keyword) {
       const kw = args.keyword.replace(/[%,()]/g, " ").trim();
