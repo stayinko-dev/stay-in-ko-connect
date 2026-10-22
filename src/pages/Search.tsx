@@ -7,6 +7,8 @@ import ListingCard from "@/components/ListingCard";
 import { Button } from "@/components/ui/button";
 import { useListings } from "@/hooks/useListings";
 import EmptyState from "@/components/ui/empty-state";
+import { useWebMCP } from "use-webmcp-tool";
+import { runWebMCPTool } from "@/lib/webmcp-telemetry";
 import ServiceMatchSection from "@/components/ServiceMatchSection";
 
 
@@ -91,6 +93,68 @@ const SearchPage = () => {
     setUniversity("");
     setPriceIdx(0);
   };
+
+  useWebMCP({
+    name: "list_shown_listings",
+    description: "List the housing listings currently shown on the search page, respecting the active filters.",
+    annotations: { readOnlyHint: true, untrustedContentHint: true },
+    execute: () =>
+      runWebMCPTool("list_shown_listings", () => {
+        if (loading) return "Listings are still loading.";
+        if (filtered.length === 0) return "No listings shown.";
+        return filtered
+          .map(
+            (l) =>
+              `${l.id}: ${l.title} — ${l.city ?? ""}${l.district ? ` ${l.district}` : ""}, ${l.price_display ?? `${l.price} KRW/mo`}, rating ${l.rating ?? "n/a"}`,
+          )
+          .join("\n");
+      }),
+  });
+
+  useWebMCP({
+    name: "filter_listings",
+    description: "Change the search page filters: keyword, city, property type, stay length, or no-deposit only.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        keyword: { type: "string", description: "Free-text keyword for title, location, or description." },
+        city: { type: "string", enum: cities, description: "City to filter by." },
+        property_type: {
+          type: "string",
+          enum: propertyTypes.map((p) => p.value),
+          description: "Property type filter.",
+        },
+        stay_type: { type: "string", enum: stayTypes.map((s) => s.value), description: "Stay length filter." },
+        no_deposit: { type: "boolean", description: "Show only no-deposit listings." },
+      },
+    },
+    execute: (args: { keyword?: string; city?: string; property_type?: string; stay_type?: string; no_deposit?: boolean }) =>
+      runWebMCPTool("filter_listings", () => {
+        if (args.keyword !== undefined) {
+          if (typeof args.keyword !== "string") throw new Error("keyword must be a string.");
+          setKeyword(args.keyword);
+        }
+        if (args.city !== undefined) {
+          if (!cities.includes(args.city)) throw new Error(`Unknown city; expected one of: ${cities.join(", ")}.`);
+          setCity(args.city);
+        }
+        if (args.property_type !== undefined) {
+          if (!propertyTypes.some((p) => p.value === args.property_type))
+            throw new Error("Unknown property type; expected one of: " + propertyTypes.map((p) => p.value).join(", ") + ".");
+          setPropertyType(args.property_type);
+        }
+        if (args.stay_type !== undefined) {
+          if (!stayTypes.some((s) => s.value === args.stay_type))
+            throw new Error("Unknown stay type; expected one of: " + stayTypes.map((s) => s.value).join(", ") + ".");
+          setStayType(args.stay_type);
+        }
+        if (args.no_deposit !== undefined) {
+          if (typeof args.no_deposit !== "boolean") throw new Error("no_deposit must be a boolean.");
+          setNoDeposit(args.no_deposit);
+        }
+        return "Filters updated.";
+      }),
+  });
 
   return (
     <div className="min-h-screen bg-background">
