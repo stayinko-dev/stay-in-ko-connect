@@ -15,6 +15,13 @@
       "when": 1792485208511,
       "tag": "0001_community_board",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792716260587,
+      "tag": "0002_storage_objects_policies",
+      "breakpoints": true
     }
   ]
 }
